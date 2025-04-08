@@ -5,6 +5,10 @@ $powershellScript = '
 [Console]::InputEncoding = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
+# Устанавливаем кодировку UTF-8 для входных и выходных данных
+[Console]::InputEncoding = [System.Text.Encoding]::UTF8
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
 $sevenZipPath = "C:\Program Files\7-Zip\7z.exe"
 
 # Проверка наличия 7-Zip
@@ -83,7 +87,7 @@ $programs = @(
     @{
         Name       = "1Password (latest)"
         Url        = "https://downloads.1password.com/win/1PasswordSetup-latest.exe"
-        Args       = "/S"
+        Args       = ""
         Installer  = "1PasswordSetup-latest.exe"
     },
     @{
@@ -243,11 +247,20 @@ function Install-SelectedProgram {
         if ($installerPath -like "*.msi") {
             # Установка MSI-пакета
             Write-Output "Установка MSI-пакета $($program.Name)..."
-            Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$installerPath`" $($program.Args)" -Wait
+            $msiArgs = "/i `"$installerPath`""
+            if ($program.Args) {
+                $msiArgs += " $($program.Args)"
+            }
+            Start-Process -FilePath "msiexec.exe" -ArgumentList $msiArgs -Wait
         } else {
             # Установка обычного установщика
             Write-Output "Установка $($program.Name)..."
-            Start-Process -FilePath $installerPath -ArgumentList $program.Args -Wait
+            $exeArgs = $program.Args
+            if ($program.Args) {
+                Start-Process -FilePath $installerPath -ArgumentList $exeArgs -Wait
+            } else {
+                Start-Process -FilePath $installerPath -Wait
+            }
         }
 
         Write-Output "$($program.Name) успешно установлен."
@@ -287,7 +300,11 @@ Write-Output "Все выбранные программы установлен�
 $powershellScriptWithBOM = "\xEF\xBB\xBF" . $powershellScript;
 
 // Форматированный скрипт для отображения в браузере
-$formattedScript = '<pre><code><strong>Script for home usage</strong><br><span style="color: blue;">$sevenZipPath = "C:\Program Files\7-Zip\7z.exe"
+$formattedScript = '<pre><code><strong>Script for home usage</strong><br><span style="color: blue;"># Устанавливаем кодировку UTF-8 для входных и выходных данных
+[Console]::InputEncoding = [System.Text.Encoding]::UTF8
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
+$sevenZipPath = "C:\Program Files\7-Zip\7z.exe"
 
 # Проверка наличия 7-Zip
 if (-Not (Test-Path -Path $sevenZipPath)) {
@@ -365,7 +382,7 @@ $programs = @(
     @{
         Name       = "1Password (latest)"
         Url        = "https://downloads.1password.com/win/1PasswordSetup-latest.exe"
-        Args       = "/S"
+        Args       = ""
         Installer  = "1PasswordSetup-latest.exe"
     },
     @{
@@ -525,11 +542,20 @@ function Install-SelectedProgram {
         if ($installerPath -like "*.msi") {
             # Установка MSI-пакета
             Write-Output "Установка MSI-пакета $($program.Name)..."
-            Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$installerPath`" $($program.Args)" -Wait
+            $msiArgs = "/i `"$installerPath`""
+            if ($program.Args) {
+                $msiArgs += " $($program.Args)"
+            }
+            Start-Process -FilePath "msiexec.exe" -ArgumentList $msiArgs -Wait
         } else {
             # Установка обычного установщика
             Write-Output "Установка $($program.Name)..."
-            Start-Process -FilePath $installerPath -ArgumentList $program.Args -Wait
+            $exeArgs = $program.Args
+            if ($program.Args) {
+                Start-Process -FilePath $installerPath -ArgumentList $exeArgs -Wait
+            } else {
+                Start-Process -FilePath $installerPath -Wait
+            }
         }
 
         Write-Output "$($program.Name) успешно установлен."
