@@ -5,10 +5,6 @@ $powershellScript = '
 [Console]::InputEncoding = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
-# Устанавливаем кодировку UTF-8 для входных и выходных данных
-[Console]::InputEncoding = [System.Text.Encoding]::UTF8
-[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-
 $sevenZipPath = "C:\Program Files\7-Zip\7z.exe"
 
 # Проверка наличия 7-Zip
@@ -158,6 +154,12 @@ $programs = @(
         Args       = "/quiet /norestart"
         Installer  = "Setup1.msi"
         Zip        = "Z-SYNC Software Ver+1.0.19.zip_210216.zip"
+    },
+    @{
+        Name       = "LibreOffice (25.2.2)"
+        Url        = "https://ftp.byfly.by/pub/tdf/libreoffice/stable/25.2.2/win/x86_64/LibreOffice_25.2.2_Win_x86-64.msi"
+        Args       = "/quiet /norestart"
+        Installer  = "LibreOffice_25.2.2_Win_x86-64.msi"
     }
     # Добавьте больше программ по аналогии
 )
@@ -211,6 +213,42 @@ function Install-SelectedProgram {
     if ($index -ge 1 -and $index -le $programs.Count) {
         $program = $programs[$index - 1]
 
+        if ($program.Type -eq "Script") {
+            # Обработка специальных случаев для скриптов
+            if ($program.Name -eq "Sysmon64") {
+                # Скачивание Sysmon64.exe
+                $sysmon64Path = Join-Path -Path $downloadPath -ChildPath $program.Installer1
+                Write-Output "Скачивание $($program.Installer1)..."
+                Start-BitsTransfer -Source $program.Url1 -Destination $sysmon64Path
+
+                # Скачивание sysmonconfig-export.xml
+                $sysmonConfigPath = Join-Path -Path $downloadPath -ChildPath $program.Installer2
+                Write-Output "Скачивание $($program.Installer2)..."
+                Start-BitsTransfer -Source $program.Url2 -Destination $sysmonConfigPath
+
+                # Копирование файлов в целевую директорию
+                $destinationPath = $program.Destination
+                if (-Not (Test-Path -Path $destinationPath)) {
+                    New-Item -ItemType Directory -Path $destinationPath
+                }
+                Copy-Item -Path $sysmon64Path -Destination $destinationPath -Force
+                Copy-Item -Path $sysmonConfigPath -Destination $destinationPath -Force
+
+                # Установка Sysmon
+                Write-Output "Установка Sysmon64..."
+                $sysmonExe = Join-Path -Path $destinationPath -ChildPath $program.Installer1
+                Start-Process -FilePath $sysmonExe -ArgumentList "-i" -Wait
+
+                # Настройка Sysmon с конфигурационным файлом
+                Write-Output "Настройка Sysmon с конфигурационным файлом..."
+                $sysmonConfigFile = Join-Path -Path $destinationPath -ChildPath $program.Installer2
+                Start-Process -FilePath $sysmonExe -ArgumentList "-c `"$sysmonConfigFile`"" -Wait
+
+                Write-Output "Sysmon64 успешно установлен и настроен."
+                return
+            }
+        }
+
         $downloadFilePath = Join-Path -Path $downloadPath -ChildPath $program.Installer
         if ($program.Zip) {
             $downloadFilePath = Join-Path -Path $downloadPath -ChildPath $program.Zip
@@ -244,7 +282,11 @@ function Install-SelectedProgram {
         }
 
         # Определение типа установочного файла
-        if ($installerPath -like "*.msi") {
+        if ($program.Type -eq "Script") {
+            # Выполнение PowerShell-скрипта
+            Write-Output "Выполнение скрипта $($program.Name)..."
+            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $installerPath
+        } elseif ($installerPath -like "*.msi") {
             # Установка MSI-пакета
             Write-Output "Установка MSI-пакета $($program.Name)..."
             $msiArgs = "/i `"$installerPath`""
@@ -263,7 +305,30 @@ function Install-SelectedProgram {
             }
         }
 
-        Write-Output "$($program.Name) успешно установлен."
+        # Дополнительные действия для Nxlog
+        if ($program.Name -eq "Nxlog") {
+            # Проверка наличия конфигурационного файла и пути
+            if ($program.ConfigUrl -and $program.ConfigFile -and $program.ConfigPath) {
+                $configFilePath = Join-Path -Path $downloadPath -ChildPath $program.ConfigFile
+                Write-Output "Скачивание конфигурационного файла $($program.ConfigFile)..."
+                Start-BitsTransfer -Source $program.ConfigUrl -Destination $configFilePath
+
+                $destinationConfigPath = Join-Path -Path $program.ConfigPath -ChildPath $program.ConfigFile
+                Write-Output "Копирование конфигурационного файла в $($destinationConfigPath)..."
+                Copy-Item -Path $configFilePath -Destination $destinationConfigPath -Force
+
+                Write-Output "Конфигурационный файл успешно скопирован."
+            }
+
+            # Перезапуск службы nxlog
+            if ($program.Service) {
+                Write-Output "Перезапуск службы $($program.Service)..."
+                Restart-Service -Name $program.Service -Force
+                Write-Output "Служба $($program.Service) успешно перезапущена."
+            }
+        }
+
+        Write-Output "$($program.Name) успешно установлен и настроен."
     } else {
         Write-Output "Неверный выбор: $index"
     }
@@ -453,6 +518,12 @@ $programs = @(
         Args       = "/quiet /norestart"
         Installer  = "Setup1.msi"
         Zip        = "Z-SYNC Software Ver+1.0.19.zip_210216.zip"
+    },
+    @{
+        Name       = "LibreOffice (25.2.2)"
+        Url        = "https://ftp.byfly.by/pub/tdf/libreoffice/stable/25.2.2/win/x86_64/LibreOffice_25.2.2_Win_x86-64.msi"
+        Args       = "/quiet /norestart"
+        Installer  = "LibreOffice_25.2.2_Win_x86-64.msi"
     }
     # Добавьте больше программ по аналогии
 )
@@ -506,6 +577,42 @@ function Install-SelectedProgram {
     if ($index -ge 1 -and $index -le $programs.Count) {
         $program = $programs[$index - 1]
 
+        if ($program.Type -eq "Script") {
+            # Обработка специальных случаев для скриптов
+            if ($program.Name -eq "Sysmon64") {
+                # Скачивание Sysmon64.exe
+                $sysmon64Path = Join-Path -Path $downloadPath -ChildPath $program.Installer1
+                Write-Output "Скачивание $($program.Installer1)..."
+                Start-BitsTransfer -Source $program.Url1 -Destination $sysmon64Path
+
+                # Скачивание sysmonconfig-export.xml
+                $sysmonConfigPath = Join-Path -Path $downloadPath -ChildPath $program.Installer2
+                Write-Output "Скачивание $($program.Installer2)..."
+                Start-BitsTransfer -Source $program.Url2 -Destination $sysmonConfigPath
+
+                # Копирование файлов в целевую директорию
+                $destinationPath = $program.Destination
+                if (-Not (Test-Path -Path $destinationPath)) {
+                    New-Item -ItemType Directory -Path $destinationPath
+                }
+                Copy-Item -Path $sysmon64Path -Destination $destinationPath -Force
+                Copy-Item -Path $sysmonConfigPath -Destination $destinationPath -Force
+
+                # Установка Sysmon
+                Write-Output "Установка Sysmon64..."
+                $sysmonExe = Join-Path -Path $destinationPath -ChildPath $program.Installer1
+                Start-Process -FilePath $sysmonExe -ArgumentList "-i" -Wait
+
+                # Настройка Sysmon с конфигурационным файлом
+                Write-Output "Настройка Sysmon с конфигурационным файлом..."
+                $sysmonConfigFile = Join-Path -Path $destinationPath -ChildPath $program.Installer2
+                Start-Process -FilePath $sysmonExe -ArgumentList "-c `"$sysmonConfigFile`"" -Wait
+
+                Write-Output "Sysmon64 успешно установлен и настроен."
+                return
+            }
+        }
+
         $downloadFilePath = Join-Path -Path $downloadPath -ChildPath $program.Installer
         if ($program.Zip) {
             $downloadFilePath = Join-Path -Path $downloadPath -ChildPath $program.Zip
@@ -539,7 +646,11 @@ function Install-SelectedProgram {
         }
 
         # Определение типа установочного файла
-        if ($installerPath -like "*.msi") {
+        if ($program.Type -eq "Script") {
+            # Выполнение PowerShell-скрипта
+            Write-Output "Выполнение скрипта $($program.Name)..."
+            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $installerPath
+        } elseif ($installerPath -like "*.msi") {
             # Установка MSI-пакета
             Write-Output "Установка MSI-пакета $($program.Name)..."
             $msiArgs = "/i `"$installerPath`""
@@ -558,7 +669,30 @@ function Install-SelectedProgram {
             }
         }
 
-        Write-Output "$($program.Name) успешно установлен."
+        # Дополнительные действия для Nxlog
+        if ($program.Name -eq "Nxlog") {
+            # Проверка наличия конфигурационного файла и пути
+            if ($program.ConfigUrl -and $program.ConfigFile -and $program.ConfigPath) {
+                $configFilePath = Join-Path -Path $downloadPath -ChildPath $program.ConfigFile
+                Write-Output "Скачивание конфигурационного файла $($program.ConfigFile)..."
+                Start-BitsTransfer -Source $program.ConfigUrl -Destination $configFilePath
+
+                $destinationConfigPath = Join-Path -Path $program.ConfigPath -ChildPath $program.ConfigFile
+                Write-Output "Копирование конфигурационного файла в $($destinationConfigPath)..."
+                Copy-Item -Path $configFilePath -Destination $destinationConfigPath -Force
+
+                Write-Output "Конфигурационный файл успешно скопирован."
+            }
+
+            # Перезапуск службы nxlog
+            if ($program.Service) {
+                Write-Output "Перезапуск службы $($program.Service)..."
+                Restart-Service -Name $program.Service -Force
+                Write-Output "Служба $($program.Service) успешно перезапущена."
+            }
+        }
+
+        Write-Output "$($program.Name) успешно установлен и настроен."
     } else {
         Write-Output "Неверный выбор: $index"
     }
