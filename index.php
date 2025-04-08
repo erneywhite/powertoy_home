@@ -16,7 +16,7 @@ if (-Not (Test-Path -Path $sevenZipPath)) {
 
     # Скачивание установщика 7-Zip (24.09)
     Write-Output "Скачивание установщика 7-Zip (24.09)..."
-    Invoke-WebRequest -Uri $sevenZipInstallerUrl -OutFile $sevenZipInstallerPath
+    Start-BitsTransfer -Source $sevenZipInstallerUrl -Destination $sevenZipInstallerPath
 
     # Установка 7-Zip (24.09)
     Write-Output "Установка 7-Zip (24.09)..."
@@ -217,7 +217,7 @@ function Install-SelectedProgram {
         if ($program.Zip) {
             # Скачивание архива
             Write-Output "Скачивание архива $($program.Name)..."
-            Invoke-WebRequest -Uri $program.Url -OutFile $downloadFilePath
+            Start-BitsTransfer -Source $program.Url -Destination $downloadFilePath
 
             # Разархивирование архива
             if (Test-Path -Path $extractPath) {
@@ -235,7 +235,7 @@ function Install-SelectedProgram {
         } else {
             # Скачивание установочного файла
             Write-Output "Скачивание $($program.Name)..."
-            Invoke-WebRequest -Uri $program.Url -OutFile $downloadFilePath
+            Start-BitsTransfer -Source $program.Url -Destination $downloadFilePath
             $installerPath = $downloadFilePath
         }
 
@@ -298,7 +298,7 @@ if (-Not (Test-Path -Path $sevenZipPath)) {
 
     # Скачивание установщика 7-Zip (24.09)
     Write-Output "Скачивание установщика 7-Zip (24.09)..."
-    Invoke-WebRequest -Uri $sevenZipInstallerUrl -OutFile $sevenZipInstallerPath
+    Start-BitsTransfer -Source $sevenZipInstallerUrl -Destination $sevenZipInstallerPath
 
     # Установка 7-Zip (24.09)
     Write-Output "Установка 7-Zip (24.09)..."
@@ -499,7 +499,7 @@ function Install-SelectedProgram {
         if ($program.Zip) {
             # Скачивание архива
             Write-Output "Скачивание архива $($program.Name)..."
-            Invoke-WebRequest -Uri $program.Url -OutFile $downloadFilePath
+            Start-BitsTransfer -Source $program.Url -Destination $downloadFilePath
 
             # Разархивирование архива
             if (Test-Path -Path $extractPath) {
@@ -517,7 +517,7 @@ function Install-SelectedProgram {
         } else {
             # Скачивание установочного файла
             Write-Output "Скачивание $($program.Name)..."
-            Invoke-WebRequest -Uri $program.Url -OutFile $downloadFilePath
+            Start-BitsTransfer -Source $program.Url -Destination $downloadFilePath
             $installerPath = $downloadFilePath
         }
 
