@@ -46,7 +46,7 @@ $programs = @(
     },
     @{
         Name       = "Google Chrome (latest)"
-        Url        = "https://dl.google.com/tag/s/appguid%3DCOM.GOOGLE.CHROME%26iid%3D%7BB7FE53B5-6E8C-5BE1-78B0-7BF4D306CB03%7D%26lang%3Dru%26browser%3D3%26usagestats%3D0%26appname%3DGoogle%2520Chrome%26needsadmin%3Dprefers%26ap%3Dx64-statsdef_1%26installdataindex%3Dempty/update2/installers/ChromeSetup.exe"
+        Url        = "https://dl.google.com/tag/s/appguid%3D%7B8A69D345-D564-463C-AFF1-A69D9E530F96%7D%26iid%3D%7B1830306B-1820-A51E-E12C-105AF0F1DDE7%7D%26lang%3Dru%26browser%3D3%26usagestats%3D0%26appname%3DGoogle%2520Chrome%26needsadmin%3Dprefers%26ap%3Dx64-statsdef_1%26installdataindex%3Dempty/update2/installers/ChromeSetup.exe"
         Args       = "/S"
         Installer  = "ChromeSetup.exe"
     },
@@ -328,7 +328,7 @@ $programs = @(
     },
     @{
         Name       = "Google Chrome (latest)"
-        Url        = "https://dl.google.com/tag/s/appguid%3DCOM.GOOGLE.CHROME%26iid%3D%7BB7FE53B5-6E8C-5BE1-78B0-7BF4D306CB03%7D%26lang%3Dru%26browser%3D3%26usagestats%3D0%26appname%3DGoogle%2520Chrome%26needsadmin%3Dprefers%26ap%3Dx64-statsdef_1%26installdataindex%3Dempty/update2/installers/ChromeSetup.exe"
+        Url        = "https://dl.google.com/tag/s/appguid%3D%7B8A69D345-D564-463C-AFF1-A69D9E530F96%7D%26iid%3D%7B1830306B-1820-A51E-E12C-105AF0F1DDE7%7D%26lang%3Dru%26browser%3D3%26usagestats%3D0%26appname%3DGoogle%2520Chrome%26needsadmin%3Dprefers%26ap%3Dx64-statsdef_1%26installdataindex%3Dempty/update2/installers/ChromeSetup.exe"
         Args       = "/S"
         Installer  = "ChromeSetup.exe"
     },
