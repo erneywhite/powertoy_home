@@ -40,7 +40,7 @@ $programs = @(
     },
     @{
         Name       = "Firefox (137.0)"
-        Url        = "https://download-installer.cdn.mozilla.net/pub/firefox/releases/137.0/win64/en-US/Firefox%20Setup%20137.0.msi"
+        Url        = "https://download-installer.cdn.mozilla.net/pub/firefox/releases/137.0/win64/ru/Firefox%20Setup%20137.0.msi"
         Args       = "/quiet /norestart"
         Installer  = "Firefox%20Setup%20137.0.msi"
     },
@@ -322,7 +322,7 @@ $programs = @(
     },
     @{
         Name       = "Firefox (137.0)"
-        Url        = "https://download-installer.cdn.mozilla.net/pub/firefox/releases/137.0/win64/en-US/Firefox%20Setup%20137.0.msi"
+        Url        = "https://download-installer.cdn.mozilla.net/pub/firefox/releases/137.0/win64/ru/Firefox%20Setup%20137.0.msi"
         Args       = "/quiet /norestart"
         Installer  = "Firefox%20Setup%20137.0.msi"
     },
