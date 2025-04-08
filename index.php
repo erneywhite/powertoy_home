@@ -98,7 +98,7 @@ $programs = @(
     },
     @{
         Name       = "qBittorrent (5.0.4)"
-        Url        = "https://download.fosshub.com/Protected/expiretime=1744099692;badurl=aHR0cHM6Ly93d3cuZm9zc2h1Yi5jb20vcUJpdHRvcnJlbnQuaHRtbA==/3d998d8e871cf3b86124ad75a68342b712425d773dd37c2b11c331b8f48f3192/5b8793a7f9ee5a5c3e97a3b2/67b50f6acb7597043c5a3ebb/qbittorrent_5.0.4_x64_setup.exe"
+        Url        = "https://netix.dl.sourceforge.net/project/qbittorrent/qbittorrent-win32/qbittorrent-5.0.4/qbittorrent_5.0.4_x64_setup.exe?viasf=1"
         Args       = "/S"
         Installer  = "qbittorrent_5.0.4_x64_setup.exe"
     },
@@ -393,7 +393,7 @@ $programs = @(
     },
     @{
         Name       = "qBittorrent (5.0.4)"
-        Url        = "https://download.fosshub.com/Protected/expiretime=1744099692;badurl=aHR0cHM6Ly93d3cuZm9zc2h1Yi5jb20vcUJpdHRvcnJlbnQuaHRtbA==/3d998d8e871cf3b86124ad75a68342b712425d773dd37c2b11c331b8f48f3192/5b8793a7f9ee5a5c3e97a3b2/67b50f6acb7597043c5a3ebb/qbittorrent_5.0.4_x64_setup.exe"
+        Url        = "https://netix.dl.sourceforge.net/project/qbittorrent/qbittorrent-win32/qbittorrent-5.0.4/qbittorrent_5.0.4_x64_setup.exe?viasf=1"
         Args       = "/S"
         Installer  = "qbittorrent_5.0.4_x64_setup.exe"
     },
