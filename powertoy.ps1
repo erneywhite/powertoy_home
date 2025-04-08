@@ -210,6 +210,32 @@ function Install-SelectedProgram {
     if ($index -ge 1 -and $index -le $programs.Count) {
         $program = $programs[$index - 1]
 
+        if ($program.Type -eq "ISO") {
+            # Обработка монтирования ISO-образа
+            $isoFilePath = Join-Path -Path $downloadPath -ChildPath $program.Installer
+
+            # Скачивание ISO-образа
+            Write-Output "Скачивание ISO-образа $($program.Name)..."
+            Start-BitsTransfer -Source $program.Url -Destination $isoFilePath
+
+            # Монтирование ISO-образа
+            Write-Output "Монтирование ISO-образа $($program.Name)..."
+            $mountResult = Mount-DiskImage -ImagePath $isoFilePath -PassThru
+            $driveLetter = ($mountResult | Get-Volume).DriveLetter + ":"
+
+            Write-Output "ISO-образ успешно смонтирован на диске $driveLetter."
+
+            # Ожидание нажатия клавиши для размонтирования
+            Read-Host "Нажмите Enter для размонтирования ISO-образа..."
+
+            # Размонтирование ISO-образа
+            Write-Output "Размонтирование ISO-образа..."
+            Dismount-DiskImage -ImagePath $isoFilePath
+
+            Write-Output "ISO-образ успешно размонтирован."
+            return
+        }
+
         if ($program.Type -eq "Script") {
             # Обработка специальных случаев для скриптов
             if ($program.Name -eq "Sysmon64") {
