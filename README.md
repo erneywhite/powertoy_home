@@ -11,6 +11,11 @@
 ```
 irm https://powertoy.erney.monster | iex
 ```
+  Команда с альтернативной ссылкой с GitHub:
+```
+irm https://raw.githubusercontent.com/erneywhite/powertoy_home/refs/heads/main/home.ps1 | iex
+```
+
 3.   Выберите программу, которую хотите установить (1-9) и нажмите Enter.
 4.   Программа установлена.
 
