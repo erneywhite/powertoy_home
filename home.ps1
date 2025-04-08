@@ -132,11 +132,11 @@ $programs = @(
         Installer  = "VirtualDesktop.Streamer.Setup.exe"
     },
     @{
-        Name       = "MiniBin (archive 6.1.1.1)"
-        Url        = "https://dw.uptodown.net/dwn/-NFx0g5JJ48-7ndGQIXpSfAY4STck01JnW-TJoZ8Cx6YZP9wsJvUsL9tEAwp210nVTJHVcgfFxi9Qk-QJDLCWvRHT0aUWYRgA4X6vnPLVTi3OSKJnEdOkPRvmYqaZ815/g_yCNJh0nM9H8yc8qLYDlb0xDXvDfYMk629VbuLjRIEHkTC7mXRmImYAObWN82gueYJaM1dJL4RoYo0WMeWPn_dqxAMf2WYWexh7SCBQfIELHHuHNi8agujrRIyVcS5e/jbsQqu-il7YI6RU2S1B2bnDC-fos1tzKUaG1yPCVIODKZKhse_D8u5HDLNwN28KENrb7DLW05jcbcN7wMd_Gag==/minibin-6-1-1-1.zip"
+        Name       = "MiniBin (archive 6.6.0.0)"
+        Url        = "https://1uost4.soft-load.eu/b3/0/6/7b5b2b5b4e1e55d6e73d51076d64a22e/minibin.zip"
         Args       = "/S"
-        Installer  = "MiniBin-6.1.1.1-Setup.exe"
-        Zip        = "minibin-6-1-1-1.zip"
+        Installer  = "MiniBin-6.6.0.0-Setup.exe"
+        Zip        = "minibin.zip"
     },
     @{
         Name       = "ID-COOLING (archive 1.0.5)"
