@@ -25,7 +25,9 @@ irm https://powertoy.erney.monster | iex
 Список доступных программ
 
 7-Zip (24.09)
+
 Firefox (137.0)
+
 Google Chrome (latest)
 Steam (latest)
 Epic Games Store (18.1.3)
