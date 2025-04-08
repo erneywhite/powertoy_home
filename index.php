@@ -154,7 +154,7 @@ $programs = @(
     },
     @{
         Name       = "Z-SYNC (archive 1.0.19)"
-        Url        = "https://www.zalman.com/cmm/fms/FileDownAll.do?atchFileId=FILE_000000000014397"
+        Url        = "https://powertoy.erney.monster/Z-SYNC%20Software%20Ver+1.0.19.zip_210216.zip"
         Args       = "/quiet /norestart"
         Installer  = "Setup1.msi"
         Zip        = "Z-SYNC Software Ver+1.0.19.zip_210216.zip"
@@ -449,7 +449,7 @@ $programs = @(
     },
     @{
         Name       = "Z-SYNC (archive 1.0.19)"
-        Url        = "https://www.zalman.com/cmm/fms/FileDownAll.do?atchFileId=FILE_000000000014397"
+        Url        = "https://powertoy.erney.monster/Z-SYNC%20Software%20Ver+1.0.19.zip_210216.zip"
         Args       = "/quiet /norestart"
         Installer  = "Setup1.msi"
         Zip        = "Z-SYNC Software Ver+1.0.19.zip_210216.zip"
