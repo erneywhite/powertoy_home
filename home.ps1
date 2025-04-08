@@ -126,9 +126,9 @@ $programs = @(
         Installer  = "WeMod-Setup.exe"
     },
     @{
-        Name       = "Virtual Desktop (latest)"
+        Name       = "Virtual Desktop Streamer (latest)"
         Url        = "https://download.vrdesktop.net/files/VirtualDesktop.Streamer.Setup.exe"
-        Args       = "/S"
+        Args       = ""
         Installer  = "VirtualDesktop.Streamer.Setup.exe"
     },
     @{
