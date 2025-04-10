@@ -5,13 +5,44 @@
 # Очистка экрана
 Clear-Host
 
+# Получение размеров консоли
+$windowWidth = [console]::WindowWidth
+$windowHeight = [console]::WindowHeight
+
 # Вычисляем центральное положение сообщения
 $centerLine = [math]::Floor($windowHeight / 2)
 
 # Вывод приветственного сообщения
-Write-CenteredMessage "Автоматический установщик программ для Windows" -lineNumber ($centerLine - 1)
+Write-CenteredMessage "Автоматический установщик программ для Windows" -lineNumber ($centerLine - 10)
 
-# Вывод строки "made by ErneyWhite" внизу окна
+# Мордочка енота
+$enot = @(
+    "░░░░░░░░░░░░░░░▄▄▄▄▄▄▄▄░░░░░░░░░░░░░░",
+    "░▄█▀███▄▄████████████████████▄▄███▀█░",
+    "░█░░▀████████████████████████████░░█░",
+    "░░█▄░░▀████████████████████████░░░▄▀░",
+    "░░░▀█▄▄████▀▀▀░░░░██░░░▀▀▀█████▄▄█▀░░",
+    "░░░▄███▀▀░░░░░░░░░██░░░░░░░░░▀███▄░░░",
+    "░░▄██▀░░░░░▄▄▄██▄▄██░▄██▄▄▄░░░░░▀██▄░",
+    "▄██▀░░░▄▄▄███▄██████████▄███▄▄▄░░░▀█▄",
+    "▀██▄▄██████████▀░███▀▀▀█████████▄▄▄█▀",
+    "░░▀██████████▀░░░███░░░▀███████████▀░",
+    "░░░░▀▀▀██████░░░█████▄░░▀██████▀▀░░░░",
+    "░░░░░░░░░▀▀▀▀▄░░█████▀░▄█▀▀▀░░░░░░░░░",
+    "░░░░░░░░░░░░░░▀▀▄▄▄▄▄▀▀░░░░░░░░░░░░░░"
+)
+
+$enotHeight = $enot.Length
+$enotStartLine = $centerLine - [math]::Floor($enotHeight / 2)
+
+for ($i = 0; $i -lt $enotHeight; $i++) {
+    $bottomLine = $enotStartLine + $i
+    [console]::SetCursorPosition(0, $bottomLine)
+    $padding = " " * [math]::Floor(($windowWidth - $enot[$i].Length) / 2)
+    [console]::WriteLine("$padding" + $enot[$i])
+}
+
+# Вывод строки "made by ErneyWhite" в самом низу консоли
 $bottomLine = $windowHeight - 1
 [console]::SetCursorPosition(0, $bottomLine)
 $padding = " " * [math]::Floor(($windowWidth - "made by ErneyWhite".Length) / 2)
@@ -22,6 +53,18 @@ Start-Sleep -Seconds 3
 
 # Очистка экрана после приветственного сообщения
 Clear-Host
+
+# Функция для центрированного вывода сообщения
+function Write-CenteredMessage {
+    param (
+        [string]$message,
+        [int]$lineNumber
+    )
+
+    $padding = " " * [math]::Floor(($windowWidth - $message.Length) / 2)
+    [console]::SetCursorPosition(0, $lineNumber)
+    [console]::WriteLine("$padding$message")
+}
 
 $sevenZipPath = "C:\Program Files\7-Zip\7z.exe"
 
