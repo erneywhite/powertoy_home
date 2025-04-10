@@ -5,6 +5,27 @@ $powershellScript = '
 [Console]::InputEncoding = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
+# Очистка экрана
+Clear-Host
+
+# Вычисляем центральное положение сообщения
+$centerLine = [math]::Floor($windowHeight / 2)
+
+# Вывод приветственного сообщения
+Write-CenteredMessage "Автоматический установщик программ для Windows" -lineNumber ($centerLine - 1)
+
+# Вывод строки "made by ErneyWhite" внизу окна
+$bottomLine = $windowHeight - 1
+[console]::SetCursorPosition(0, $bottomLine)
+$padding = " " * [math]::Floor(($windowWidth - "made by ErneyWhite".Length) / 2)
+[console]::WriteLine("$padding" + "made by ErneyWhite")
+
+# Пауза на 3 секунды
+Start-Sleep -Seconds 3
+
+# Очистка экрана после приветственного сообщения
+Clear-Host
+
 $sevenZipPath = "C:\Program Files\7-Zip\7z.exe"
 
 # Проверка наличия 7-Zip
@@ -400,6 +421,27 @@ $powershellScriptWithBOM = "\xEF\xBB\xBF" . $powershellScript;
 $formattedScript = '<pre><code><strong>Script for home usage</strong><br><span style="color: blue;"># Устанавливаем кодировку UTF-8 для входных и выходных данных
 [Console]::InputEncoding = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
+# Очистка экрана
+Clear-Host
+
+# Вычисляем центральное положение сообщения
+$centerLine = [math]::Floor($windowHeight / 2)
+
+# Вывод приветственного сообщения
+Write-CenteredMessage "Автоматический установщик программ для Windows" -lineNumber ($centerLine - 1)
+
+# Вывод строки "made by ErneyWhite" внизу окна
+$bottomLine = $windowHeight - 1
+[console]::SetCursorPosition(0, $bottomLine)
+$padding = " " * [math]::Floor(($windowWidth - "made by ErneyWhite".Length) / 2)
+[console]::WriteLine("$padding" + "made by ErneyWhite")
+
+# Пауза на 3 секунды
+Start-Sleep -Seconds 3
+
+# Очистка экрана после приветственного сообщения
+Clear-Host
 
 $sevenZipPath = "C:\Program Files\7-Zip\7z.exe"
 
