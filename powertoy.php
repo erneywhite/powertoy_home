@@ -220,6 +220,13 @@ $programs = @(
         Zip        = "Z-SYNC Software Ver+1.0.19.zip_210216.zip"
     },
     @{
+        Name       = "StreamDock AJAZZ (archive 2.10.185)"
+        Url        = "https://download.s21i.co99.net/25789609/0/0/ABUIABBQGAAg762DvAYoq5mRhwI.rar?f=AJAZZ_AKP153R%26amp%3BAKP815%26amp%3BAKP03R_Screen%20Driver%20%28Win_Russian%20Version%29%20_V2.10.185.rar"
+        Args       = "/S"
+        Installer  = "Stream-Dock-AJAZZ-Installer_Windows_ru.exe"
+        Zip        = "AJAZZ_AKP153R%26amp%3BAKP815%26amp%3BAKP03R_Screen%20Driver%20%28Win_Russian%20Version%29%20_V2.10.185.rar"
+    },
+    @{
         Name       = "LibreOffice (25.2.2)"
         Url        = "https://ftp.byfly.by/pub/tdf/libreoffice/stable/25.2.2/win/x86_64/LibreOffice_25.2.2_Win_x86-64.msi"
         Args       = "/quiet /norestart"
@@ -678,6 +685,13 @@ $programs = @(
         Args       = "/quiet /norestart"
         Installer  = "Setup1.msi"
         Zip        = "Z-SYNC Software Ver+1.0.19.zip_210216.zip"
+    },
+    @{
+        Name       = "StreamDock AJAZZ (archive 2.10.185)"
+        Url        = "https://download.s21i.co99.net/25789609/0/0/ABUIABBQGAAg762DvAYoq5mRhwI.rar?f=AJAZZ_AKP153R%26amp%3BAKP815%26amp%3BAKP03R_Screen%20Driver%20%28Win_Russian%20Version%29%20_V2.10.185.rar"
+        Args       = "/S"
+        Installer  = "Stream-Dock-AJAZZ-Installer_Windows_ru.exe"
+        Zip        = "AJAZZ_AKP153R%26amp%3BAKP815%26amp%3BAKP03R_Screen%20Driver%20%28Win_Russian%20Version%29%20_V2.10.185.rar"
     },
     @{
         Name       = "LibreOffice (25.2.2)"
