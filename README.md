@@ -48,6 +48,7 @@ Virtual Desktop Streamer (latest)
 MiniBin (archive 6.6.0.0)
 ID-COOLING (archive 1.0.5)
 Z-SYNC (archive 1.0.19)
+StreamDock AJAZZ (archive 2.10.185)
 LibreOffice (25.2.2)
 WinDirStat (2.2.2)
 ```
