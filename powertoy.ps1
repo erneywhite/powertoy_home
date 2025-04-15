@@ -217,11 +217,10 @@ $programs = @(
         Zip        = "Z-SYNC Software Ver+1.0.19.zip_210216.zip"
     },
     @{
-        Name       = "StreamDock AJAZZ (archive 2.10.185)"
-        Url        = "https://download.s21i.co99.net/25789609/0/0/ABUIABBQGAAg762DvAYoq5mRhwI.rar?f=AJAZZ_AKP153R%26amp%3BAKP815%26amp%3BAKP03R_Screen%20Driver%20%28Win_Russian%20Version%29%20_V2.10.185.rar"
+        Name       = "Stream Dock (latest)"
+        Url        = "https://download1979.mediafire.com/83pu8n5j5ejgntt4Fs0jTIZUJSz-7GhIgIL5rFp1rMCvlqPiTMipD_7v70aj5NpkbKy-gVFRha8eZoM12-i26JA49Ji-YCP-InlPTKUHfwkOI5OxkyUsVMly3X64sEla7Rb_3GsnnCjkHEex9OyC65-nXV7XUk_EbKCaapw4JqKQ/bo00bunrx3nwqbc/Stream-Dock-Installer_Windows.exe"
         Args       = ""
-        Installer  = "Stream-Dock-AJAZZ-Installer_Windows_ru.exe"
-        Zip        = "AJAZZ_AKP153R%26amp%3BAKP815%26amp%3BAKP03R_Screen%20Driver%20%28Win_Russian%20Version%29%20_V2.10.185.rar"
+        Installer  = "Stream-Dock-Installer_Windows.exe"
     },
     @{
         Name       = "LibreOffice (25.2.2)"
