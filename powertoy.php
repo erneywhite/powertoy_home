@@ -12,16 +12,34 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     Exit
 }
 
-# Функция для центрированного вывода сообщения
+# Функция для центрированного вывода сообщения с цветами
 function Write-CenteredMessage {
     param (
         [string]$message,
-        [int]$lineNumber
+        [int]$lineNumber,
+        [string]$foregroundColor = $null,
+        [string]$backgroundColor = $null
     )
 
+    $originalForeground = [console]::ForegroundColor
+    $originalBackground = [console]::BackgroundColor
+
+    if ($foregroundColor) {
+        [console]::ForegroundColor = $foregroundColor
+    }
+
+    if ($backgroundColor) {
+        [console]::BackgroundColor = $backgroundColor
+    }
+
+    $windowWidth = [console]::WindowWidth
     $padding = " " * [math]::Floor(($windowWidth - $message.Length) / 2)
     [console]::SetCursorPosition(0, $lineNumber)
     [console]::WriteLine("$padding$message")
+
+    # Возвращаем цвета назад
+    [console]::ForegroundColor = $originalForeground
+    [console]::BackgroundColor = $originalBackground
 }
 
 # Очистка экрана
@@ -35,7 +53,7 @@ $windowHeight = [console]::WindowHeight
 $centerLine = [math]::Floor($windowHeight / 2)
 
 # Вывод приветственного сообщения
-Write-CenteredMessage "Автоматический установщик программ для Windows" -lineNumber ($centerLine - 10)
+Write-CenteredMessage "Автоматический установщик программ для Windows" -lineNumber ($centerLine - 10) -ForegroundColor DarkRed
 
 # Мордочка енота
 $enot = @(
@@ -67,8 +85,14 @@ for ($i = 0; $i -lt $enotHeight; $i++) {
 # Вывод строки "made by ErneyWhite" в самом низу консоли
 $bottomLine = $windowHeight - 1
 [console]::SetCursorPosition(0, $bottomLine)
+# Цвет текста — например, Cyan (можно изменить)
+$originalColor = [console]::ForegroundColor
+[console]::ForegroundColor = "DarkRed"
+# Вывод надписи по центру
 $padding = " " * [math]::Floor(($windowWidth - "made by ErneyWhite".Length) / 2)
 [console]::WriteLine("$padding" + "made by ErneyWhite")
+# Возврат к исходному цвету
+[console]::ForegroundColor = $originalColor
 
 # Пауза на 3 секунды
 Start-Sleep -Seconds 3
@@ -448,16 +472,34 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     Exit
 }
 
-# Функция для центрированного вывода сообщения
+# Функция для центрированного вывода сообщения с цветами
 function Write-CenteredMessage {
     param (
         [string]$message,
-        [int]$lineNumber
+        [int]$lineNumber,
+        [string]$foregroundColor = $null,
+        [string]$backgroundColor = $null
     )
 
+    $originalForeground = [console]::ForegroundColor
+    $originalBackground = [console]::BackgroundColor
+
+    if ($foregroundColor) {
+        [console]::ForegroundColor = $foregroundColor
+    }
+
+    if ($backgroundColor) {
+        [console]::BackgroundColor = $backgroundColor
+    }
+
+    $windowWidth = [console]::WindowWidth
     $padding = " " * [math]::Floor(($windowWidth - $message.Length) / 2)
     [console]::SetCursorPosition(0, $lineNumber)
     [console]::WriteLine("$padding$message")
+
+    # Возвращаем цвета назад
+    [console]::ForegroundColor = $originalForeground
+    [console]::BackgroundColor = $originalBackground
 }
 
 # Очистка экрана
@@ -471,7 +513,7 @@ $windowHeight = [console]::WindowHeight
 $centerLine = [math]::Floor($windowHeight / 2)
 
 # Вывод приветственного сообщения
-Write-CenteredMessage "Автоматический установщик программ для Windows" -lineNumber ($centerLine - 10)
+Write-CenteredMessage "Автоматический установщик программ для Windows" -lineNumber ($centerLine - 10) -ForegroundColor DarkRed
 
 # Мордочка енота
 $enot = @(
@@ -503,8 +545,14 @@ for ($i = 0; $i -lt $enotHeight; $i++) {
 # Вывод строки "made by ErneyWhite" в самом низу консоли
 $bottomLine = $windowHeight - 1
 [console]::SetCursorPosition(0, $bottomLine)
+# Цвет текста — например, Cyan (можно изменить)
+$originalColor = [console]::ForegroundColor
+[console]::ForegroundColor = "DarkRed"
+# Вывод надписи по центру
 $padding = " " * [math]::Floor(($windowWidth - "made by ErneyWhite".Length) / 2)
 [console]::WriteLine("$padding" + "made by ErneyWhite")
+# Возврат к исходному цвету
+[console]::ForegroundColor = $originalColor
 
 # Пауза на 3 секунды
 Start-Sleep -Seconds 3
