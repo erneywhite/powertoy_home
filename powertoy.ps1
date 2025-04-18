@@ -2,6 +2,25 @@
 [Console]::InputEncoding = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
+# Проверка прав администратора
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Host "Скрипт требует запуска от имени администратора." -ForegroundColor Red
+    Pause
+    Exit
+}
+
+# Функция для центрированного вывода сообщения
+function Write-CenteredMessage {
+    param (
+        [string]$message,
+        [int]$lineNumber
+    )
+
+    $padding = " " * [math]::Floor(($windowWidth - $message.Length) / 2)
+    [console]::SetCursorPosition(0, $lineNumber)
+    [console]::WriteLine("$padding$message")
+}
+
 # Очистка экрана
 Clear-Host
 
@@ -66,29 +85,34 @@ function Write-CenteredMessage {
     [console]::WriteLine("$padding$message")
 }
 
-$sevenZipPath = "C:\Program Files\7-Zip\7z.exe"
+$sevenZipPath = $sevenZipPaths | Where-Object { Test-Path $_ } | Select-Object -First 1
 
 # Проверка наличия 7-Zip
 if (-Not (Test-Path -Path $sevenZipPath)) {
-    Write-Output "7-Zip не найден по пути $sevenZipPath. Установка 7-Zip (24.09)..."
+    Write-Host "7-Zip не найден по пути $sevenZipPath. Пытаемся установить..." -ForegroundColor Yellow
 
     $sevenZipInstallerUrl = "https://www.7-zip.org/a/7z2409-x64.exe"
     $sevenZipInstallerPath = "$env:TEMP\7z2409-x64.exe"
 
-    # Скачивание установщика 7-Zip (24.09)
-    Write-Output "Скачивание установщика 7-Zip (24.09)..."
-    Start-BitsTransfer -Source $sevenZipInstallerUrl -Destination $sevenZipInstallerPath
+try {
+    Write-Host "Скачивание установщика 7-Zip..." -ForegroundColor Cyan
+    Start-BitsTransfer -Source $sevenZipInstallerUrl -Destination $sevenZipInstallerPath -ErrorAction Stop
 
-    # Установка 7-Zip (24.09)
-    Write-Output "Установка 7-Zip (24.09)..."
-    Start-Process -FilePath $sevenZipInstallerPath -ArgumentList "/S" -Wait
+    Write-Host "Установка 7-Zip..." -ForegroundColor Cyan
+    Start-Process -FilePath $sevenZipInstallerPath -ArgumentList "/S" -Wait -ErrorAction Stop
 
-    # Проверка успешности установки
-    if (-Not (Test-Path -Path $sevenZipPath)) {
-        Write-Output "Не удалось установить 7-Zip. Пожалуйста, установите 7-Zip вручную и укажите правильный путь."
-        exit
+    if (Test-Path -Path $sevenZipPath) {
+        Write-Host "7-Zip успешно установлен!" -ForegroundColor Green
+        Remove-Item -Path $sevenZipInstallerPath -Force -ErrorAction SilentlyContinue
+    } else {
+        throw "7-Zip не установлен. Убедитесь, что установка прошла корректно."
     }
-    Write-Output "7-Zip успешно установлен."
+}
+catch {
+    Write-Host "Произошла ошибка во время установки 7-Zip: $_" -ForegroundColor Red
+    Pause
+    Exit
+}
 }
 
 # Список программ с их URL, аргументами установки, именами установщиков и (опционально) архивами
@@ -248,11 +272,11 @@ if (-Not (Test-Path -Path $downloadPath)) {
 # Функция для отображения меню
 function Show-Menu {
     Clear-Host
-    Write-Output "Выберите программу для установки (для пунктов с archive необходимо наличие 7-Zip) или q для выхода:"
+    Write-host "Выберите программу для установки (для пунктов с archive необходимо наличие 7-Zip) или q для выхода:"  -ForegroundColor Green
     for ($i = 0; $i -lt $programs.Count; $i++) {
-        Write-Output "[$($i + 1)] $($programs[$i].Name)"
+        Write-host "[$($i + 1)] $($programs[$i].Name)"
     }
-    Write-Output "[q] Выход"
+    Write-host "[q] Выход" -ForegroundColor Green
 }
 
 # Функция для рекурсивного разархивирования
@@ -262,7 +286,7 @@ function Extract-Archive {
         [string]$extractPath
     )
 
-    Write-Output "Разархивирование $($archivePath)..."
+    Write-host "Разархивирование $($archivePath)..." -ForegroundColor Cyan
     Start-Process -FilePath $sevenZipPath -ArgumentList "x -o`"$extractPath`" `"$archivePath`" -y" -Wait
 
     # Поиск вложенных архивов
@@ -291,61 +315,30 @@ function Install-SelectedProgram {
             $isoFilePath = Join-Path -Path $downloadPath -ChildPath $program.Installer
 
             # Скачивание ISO-образа
-            Write-Output "Скачивание ISO-образа $($program.Name)..."
+            Write-host "Скачивание ISO-образа $($program.Name)..." -ForegroundColor Cyan
             Start-BitsTransfer -Source $program.Url -Destination $isoFilePath
 
             # Монтирование ISO-образа
-            Write-Output "Монтирование ISO-образа $($program.Name)..."
+            Write-host "Монтирование ISO-образа $($program.Name)..." -ForegroundColor Cyan
             $mountResult = Mount-DiskImage -ImagePath $isoFilePath -PassThru
             $driveLetter = ($mountResult | Get-Volume).DriveLetter + ":"
 
-            Write-Output "ISO-образ успешно смонтирован на диске $driveLetter."
+            Write-host "ISO-образ успешно смонтирован на диске $driveLetter." -ForegroundColor Green
 
             # Ожидание нажатия клавиши для размонтирования
-            Read-Host "Нажмите Enter для размонтирования ISO-образа..."
+            Read-Host "Нажмите Enter для размонтирования ISO-образа..." -ForegroundColor Cyan
 
             # Размонтирование ISO-образа
-            Write-Output "Размонтирование ISO-образа..."
+            Write-host "Размонтирование ISO-образа..." -ForegroundColor Cyan
             Dismount-DiskImage -ImagePath $isoFilePath
 
-            Write-Output "ISO-образ успешно размонтирован."
+            Write-host "ISO-образ успешно размонтирован." -ForegroundColor Green
             return
         }
 
         if ($program.Type -eq "Script") {
             # Обработка специальных случаев для скриптов
-            if ($program.Name -eq "Sysmon64") {
-                # Скачивание Sysmon64.exe
-                $sysmon64Path = Join-Path -Path $downloadPath -ChildPath $program.Installer1
-                Write-Output "Скачивание $($program.Installer1)..."
-                Start-BitsTransfer -Source $program.Url1 -Destination $sysmon64Path
-
-                # Скачивание sysmonconfig-export.xml
-                $sysmonConfigPath = Join-Path -Path $downloadPath -ChildPath $program.Installer2
-                Write-Output "Скачивание $($program.Installer2)..."
-                Start-BitsTransfer -Source $program.Url2 -Destination $sysmonConfigPath
-
-                # Копирование файлов в целевую директорию
-                $destinationPath = $program.Destination
-                if (-Not (Test-Path -Path $destinationPath)) {
-                    New-Item -ItemType Directory -Path $destinationPath
-                }
-                Copy-Item -Path $sysmon64Path -Destination $destinationPath -Force
-                Copy-Item -Path $sysmonConfigPath -Destination $destinationPath -Force
-
-                # Установка Sysmon
-                Write-Output "Установка Sysmon64..."
-                $sysmonExe = Join-Path -Path $destinationPath -ChildPath $program.Installer1
-                Start-Process -FilePath $sysmonExe -ArgumentList "-i" -Wait
-
-                # Настройка Sysmon с конфигурационным файлом
-                Write-Output "Настройка Sysmon с конфигурационным файлом..."
-                $sysmonConfigFile = Join-Path -Path $destinationPath -ChildPath $program.Installer2
-                Start-Process -FilePath $sysmonExe -ArgumentList "-c `"$sysmonConfigFile`"" -Wait
-
-                Write-Output "Sysmon64 успешно установлен и настроен."
-                return
-            }
+            
         }
 
         $downloadFilePath = Join-Path -Path $downloadPath -ChildPath $program.Installer
@@ -357,7 +350,7 @@ function Install-SelectedProgram {
 
         if ($program.Zip) {
             # Скачивание архива
-            Write-Output "Скачивание архива $($program.Name)..."
+            Write-host "Скачивание архива $($program.Name)..." -ForegroundColor Cyan
             Start-BitsTransfer -Source $program.Url -Destination $downloadFilePath
 
             # Разархивирование архива
@@ -370,12 +363,12 @@ function Install-SelectedProgram {
             # Поиск установного файла внутри разархивированных файлов
             $installerPath = Get-ChildItem -Path $extractPath -Recurse -Include *.msi, *.exe | Select-Object -First 1 -ExpandProperty FullName
             if (-Not $installerPath) {
-                Write-Output "Установочный файл не найден в разархивированных файлах."
+                Write-host "Установочный файл не найден в разархивированных файлах." -ForegroundColor Red
                 return
             }
         } else {
             # Скачивание установочного файла
-            Write-Output "Скачивание $($program.Name)..."
+            Write-host "Скачивание $($program.Name)..." -ForegroundColor Cyan
             Start-BitsTransfer -Source $program.Url -Destination $downloadFilePath
             $installerPath = $downloadFilePath
         }
@@ -383,11 +376,11 @@ function Install-SelectedProgram {
         # Определение типа установочного файла
         if ($program.Type -eq "Script") {
             # Выполнение PowerShell-скрипта
-            Write-Output "Выполнение скрипта $($program.Name)..."
+            Write-host "Выполнение скрипта $($program.Name)..." -ForegroundColor Cyan
             & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $installerPath
         } elseif ($installerPath -like "*.msi") {
             # Установка MSI-пакета
-            Write-Output "Установка MSI-пакета $($program.Name)..."
+            Write-host "Установка MSI-пакета $($program.Name)..." -ForegroundColor Cyan
             $msiArgs = "/i `"$installerPath`""
             if ($program.Args) {
                 $msiArgs += " $($program.Args)"
@@ -395,7 +388,7 @@ function Install-SelectedProgram {
             Start-Process -FilePath "msiexec.exe" -ArgumentList $msiArgs -Wait
         } else {
             # Установка обычного установщика
-            Write-Output "Установка $($program.Name)..."
+            Write-host "Установка $($program.Name)..." -ForegroundColor Cyan
             $exeArgs = $program.Args
             if ($program.Args) {
                 Start-Process -FilePath $installerPath -ArgumentList $exeArgs -Wait
@@ -404,32 +397,9 @@ function Install-SelectedProgram {
             }
         }
 
-        # Дополнительные действия для Nxlog
-        if ($program.Name -eq "Nxlog") {
-            # Проверка наличия конфигурационного файла и пути
-            if ($program.ConfigUrl -and $program.ConfigFile -and $program.ConfigPath) {
-                $configFilePath = Join-Path -Path $downloadPath -ChildPath $program.ConfigFile
-                Write-Output "Скачивание конфигурационного файла $($program.ConfigFile)..."
-                Start-BitsTransfer -Source $program.ConfigUrl -Destination $configFilePath
-
-                $destinationConfigPath = Join-Path -Path $program.ConfigPath -ChildPath $program.ConfigFile
-                Write-Output "Копирование конфигурационного файла в $($destinationConfigPath)..."
-                Copy-Item -Path $configFilePath -Destination $destinationConfigPath -Force
-
-                Write-Output "Конфигурационный файл успешно скопирован."
-            }
-
-            # Перезапуск службы nxlog
-            if ($program.Service) {
-                Write-Output "Перезапуск службы $($program.Service)..."
-                Restart-Service -Name $program.Service -Force
-                Write-Output "Служба $($program.Service) успешно перезапущена."
-            }
-        }
-
-        Write-Output "$($program.Name) успешно установлен и настроен."
+        Write-host "$($program.Name) успешно установлен и настроен." -ForegroundColor Green
     } else {
-        Write-Output "Неверный выбор: $index"
+        Write-host "Неверный выбор: $index" -ForegroundColor Yellow
     }
 }
 
@@ -439,7 +409,7 @@ do {
     $input = Read-Host "Введите номер программы для установки или q/й для выхода"
 
     if ($input -eq "q" -or $input -eq "й") {
-        Write-Output "Выход из программы."
+        Write-host "Выход из программы." -ForegroundColor Green
         break
     }
 
@@ -448,7 +418,7 @@ do {
     if ([int]::TryParse($input, [ref]$selectedIndex) -and $selectedIndex -ge 1 -and $selectedIndex -le $programs.Count) {
         Install-SelectedProgram -index $selectedIndex
     } else {
-        Write-Output "Неверный выбор: $input"
+        Write-host "Неверный выбор: $input" -ForegroundColor Red
     }
 
     Read-Host "Нажмите Enter для возврата в меню..."
@@ -457,4 +427,4 @@ do {
 # Удаляем папку с загруженными установщиками
 Remove-Item -Path $downloadPath -Recurse -Force
 
-Write-Output "Все выбранные программы установлены."
+Write-host "Все выбранные программы установлены." -ForegroundColor Green
