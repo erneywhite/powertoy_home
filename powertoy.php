@@ -217,6 +217,12 @@ $programs = @(
         Installer  = "ChromeSetup.exe"
     },
     @{
+        Name       = "Notepad++ (8.7.9)"
+        Url        = "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.7.9/npp.8.7.9.Installer.x64.exe"
+        Args       = "/S"
+        Installer  = "npp.8.7.9.Installer.x64.exe"
+    },
+    @{
         Name       = "Steam (latest)"
         Url        = "https://cdn.cloudflare.steamstatic.com/client/installer/SteamSetup.exe"
         Args       = "/S"
@@ -309,7 +315,7 @@ $programs = @(
     },
     @{
         Name       = "ID-COOLING (archive 1.0.5)"
-        Url        = "https://drive.usercontent.google.com/download?id=1UapYowSOkg_LUKP14mhaqmh0Gtj8wuSM&export=download&authuser=0&confirm=t&uuid=e8204f52-1f77-4c56-81f6-e8cb1970f4df&at=APcmpoxFN0LPH6HQZH_2D0GT2T7_%3A1744056809000"
+        Url        = "https://drive.google.com/uc?export=download&id=1YuFnEYoF6AhnvRm9q57oMKNxPZhqiFsW"
         Args       = "/quiet /norestart"
         Installer  = "ID-COOLING2.1V1.0.5.msi"
         Zip        = "ID-COOLING2.1V1.0.5-SetupFiles.rar"
