@@ -2,11 +2,32 @@
 [Console]::InputEncoding = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
+function Get-Response {
+    $response = Read-Host "Хотите запустить скрипт от имени администратора? (y/н, n/т)"
+    if ($response -eq "y" -or $response -eq "н") {
+        return $true
+    } elseif ($response -eq "n" -or $response -eq "т") {
+        return $false
+    } else {
+        Write-Host "Неверный ответ. Пожалуйста, введите y/н для согласия или n/т для отказа." -ForegroundColor Yellow
+        return Get-Response
+    }
+}
+
 # Проверка прав администратора
 if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
     Write-Host "Скрипт требует запуска от имени администратора." -ForegroundColor Red
-    Pause
-    Exit
+    $response = Get-Response
+    if ($response) {
+        # Запускаем скрипт от имени администратора
+        Start-Process -FilePath PowerShell -ArgumentList "-Command", "irm https://powertoy.erney.monster | iex" -Verb RunAs
+        # Выходим из текущего процесса
+        Exit
+    } else {
+        Write-Host "Скрипт требует запуска от имени администратора для корректной работы." -ForegroundColor Red
+        Pause
+        Exit
+    }
 }
 
 # Функция для центрированного вывода сообщения с цветами
