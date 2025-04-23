@@ -300,11 +300,10 @@ $programs = @(
         Zip        = "minibin.zip"
     },
     @{
-        Name       = "ID-COOLING (archive 1.0.5)"
-        Url        = "https://drive.google.com/uc?export=download&id=1YuFnEYoF6AhnvRm9q57oMKNxPZhqiFsW"
+        Name       = "ID-COOLING (1.0.5)"
+        Url        = "https://powertoy.erney.monster/ID-COOLING2.1V1.0.5.msi"
         Args       = "/quiet /norestart"
         Installer  = "ID-COOLING2.1V1.0.5.msi"
-        Zip        = "ID-COOLING2.1V1.0.5-SetupFiles.rar"
     },
     @{
         Name       = "Z-SYNC (archive 1.0.19)"
