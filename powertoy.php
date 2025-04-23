@@ -1,7 +1,18 @@
 <?php
-// Ваш PowerShell скрипт
-$powershellScript = '
-# Устанавливаем кодировку UTF-8 для входных и выходных данных
+// Получаем User-Agent из заголовков запроса
+$userAgent = $_SERVER['HTTP_USER_AGENT']?? '';
+
+// Проверяем, является ли запрос от PowerShell или curl
+if (strpos($userAgent, 'PowerShell')!== false || strpos($userAgent, 'curl')!== false) {
+    // Удаляем любые буферные выходные данные
+    ob_clean();
+    
+    // Устанавливаем кодировку UTF-8 без BOM
+    header('Content-Type: application/octet-stream; charset=utf-8');
+    header('Content-Encoding: UTF-8');
+    
+    // Возвращаем чистый PowerShell скрипт
+    echo '# Устанавливаем кодировку UTF-8 для входных и выходных данных
 [Console]::InputEncoding = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
@@ -454,14 +465,10 @@ do {
 # Удаляем папку с загруженными установщиками
 Remove-Item -Path $downloadPath -Recurse -Force
 
-Write-host "Все выбранные программы установлены." -ForegroundColor Green
-';
-
-// Добавляем BOM для UTF-8
-$powershellScriptWithBOM = "\xEF\xBB\xBF" . $powershellScript;
-
-// Форматированный скрипт для отображения в браузере
-$formattedScript = '<pre><code><strong>Script for home usage</strong><br><span style="color: blue;"># Устанавливаем кодировку UTF-8 для входных и выходных данных
+Write-host "Все выбранные программы установлены." -ForegroundColor Green';
+} else {
+    // Форматированный скрипт для отображения в браузере
+    $formattedScript = '<pre><code><strong>Script for home usage</strong><br><span style="color: blue;"># Устанавливаем кодировку UTF-8 для входных и выходных данных
 [Console]::InputEncoding = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
@@ -915,16 +922,7 @@ do {
 Remove-Item -Path $downloadPath -Recurse -Force
 
 Write-host "Все выбранные программы установлены." -ForegroundColor Green</span></code></pre>';
-
-// Получаем User-Agent из заголовков запроса
-$userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
-
-// Проверяем, является ли запрос от PowerShell или curl
-if (strpos($userAgent, 'PowerShell') !== false || strpos($userAgent, 'curl') !== false) {
-    // Возвращаем чистый PowerShell скрипт с правильной кодировкой и BOM
-    header('Content-Type: application/octet-stream; charset=utf-8');
-    echo $powershellScriptWithBOM;
-} else {
+    
     // Возвращаем форматированный HTML
     header('Content-Type: text/html; charset=utf-8');
     echo '
@@ -954,7 +952,7 @@ if (strpos($userAgent, 'PowerShell') !== false || strpos($userAgent, 'curl') !==
     </head>
     <body>
         <h1>Made by Erney White</h1>
-        ' . $formattedScript . '
+        '. $formattedScript. '
     </body>
     </html>
     ';
