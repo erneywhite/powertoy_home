@@ -212,7 +212,7 @@ $programs = @(
     },
     @{
         Name       = "Google Chrome (latest)"
-        Url        = "https://dl.google.com/tag/s/appguid%3D%7B8A69D345-D564-463C-AFF1-A69D9E530F96%7D%26iid%3D%7B1830306B-1820-A51E-E12C-105AF0F1DDE7%7D%26lang%3Dru%26browser%3D3%26usagestats%3D0%26appname%3DGoogle%2520Chrome%26needsadmin%3Dprefers%26ap%3Dx64-statsdef_1%26installdataindex%3Dempty/update2/installers/ChromeSetup.exe"
+        Url        = "https://l3.erney.monster/ChromeSetup.exe"
         Args       = "/S"
         Installer  = "ChromeSetup.exe"
     },
@@ -717,9 +717,15 @@ $programs = @(
     },
     @{
         Name       = "Google Chrome (latest)"
-        Url        = "https://dl.google.com/tag/s/appguid%3D%7B8A69D345-D564-463C-AFF1-A69D9E530F96%7D%26iid%3D%7B1830306B-1820-A51E-E12C-105AF0F1DDE7%7D%26lang%3Dru%26browser%3D3%26usagestats%3D0%26appname%3DGoogle%2520Chrome%26needsadmin%3Dprefers%26ap%3Dx64-statsdef_1%26installdataindex%3Dempty/update2/installers/ChromeSetup.exe"
+        Url        = "https://l3.erney.monster/ChromeSetup.exe"
         Args       = "/S"
         Installer  = "ChromeSetup.exe"
+    },
+    @{
+        Name       = "Notepad++ (8.7.9)"
+        Url        = "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.7.9/npp.8.7.9.Installer.x64.exe"
+        Args       = "/S"
+        Installer  = "npp.8.7.9.Installer.x64.exe"
     },
     @{
         Name       = "Steam (latest)"
@@ -814,7 +820,7 @@ $programs = @(
     },
     @{
         Name       = "ID-COOLING (archive 1.0.5)"
-        Url        = "https://drive.usercontent.google.com/download?id=1UapYowSOkg_LUKP14mhaqmh0Gtj8wuSM&export=download&authuser=0&confirm=t&uuid=e8204f52-1f77-4c56-81f6-e8cb1970f4df&at=APcmpoxFN0LPH6HQZH_2D0GT2T7_%3A1744056809000"
+        Url        = "https://drive.google.com/uc?export=download&id=1YuFnEYoF6AhnvRm9q57oMKNxPZhqiFsW"
         Args       = "/quiet /norestart"
         Installer  = "ID-COOLING2.1V1.0.5.msi"
         Zip        = "ID-COOLING2.1V1.0.5-SetupFiles.rar"
