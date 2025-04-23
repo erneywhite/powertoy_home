@@ -148,30 +148,52 @@ $sevenZipPath = $sevenZipPaths | Where-Object { Test-Path $_ } | Select-Object -
 
 # Проверка наличия 7-Zip
 if (-Not (Test-Path -Path $sevenZipPath)) {
-    Write-Host "7-Zip не найден по пути $sevenZipPath. Пытаемся установить..." -ForegroundColor Yellow
+    Write-Host "7-Zip не найден по пути $sevenZipPath. Рекомендуется установить его для корректной работы некоторых программ." -ForegroundColor Yellow
+    
+    $response = Read-Host "Хотите установить 7-Zip? (y/н, n/т)"
+    if ($response -eq "y" -or $response -eq "н") {
+        $sevenZipInstallerUrl = "https://www.7-zip.org/a/7z2409-x64.exe"
+        $sevenZipInstallerPath = "$env:TEMP\7z2409-x64.exe"
 
-    $sevenZipInstallerUrl = "https://www.7-zip.org/a/7z2409-x64.exe"
-    $sevenZipInstallerPath = "$env:TEMP\7z2409-x64.exe"
+        try {
+            Write-Host "Скачивание установщика 7-Zip..." -ForegroundColor Cyan
+            Start-BitsTransfer -Source $sevenZipInstallerUrl -Destination $sevenZipInstallerPath -ErrorAction Stop
 
-try {
-    Write-Host "Скачивание установщика 7-Zip..." -ForegroundColor Cyan
-    Start-BitsTransfer -Source $sevenZipInstallerUrl -Destination $sevenZipInstallerPath -ErrorAction Stop
+            Write-Host "Установка 7-Zip..." -ForegroundColor Cyan
+            Start-Process -FilePath $sevenZipInstallerPath -ArgumentList "/S" -Wait -ErrorAction Stop
 
-    Write-Host "Установка 7-Zip..." -ForegroundColor Cyan
-    Start-Process -FilePath $sevenZipInstallerPath -ArgumentList "/S" -Wait -ErrorAction Stop
-
-    if (Test-Path -Path $sevenZipPath) {
-        Write-Host "7-Zip успешно установлен!" -ForegroundColor Green
-        Remove-Item -Path $sevenZipInstallerPath -Force -ErrorAction SilentlyContinue
+            if (Test-Path -Path $sevenZipPath) {
+                Write-Host "7-Zip успешно установлен!" -ForegroundColor Green
+                Remove-Item -Path $sevenZipInstallerPath -Force -ErrorAction SilentlyContinue
+            } else {
+                throw "7-Zip не установлен. Убедитесь, что установка прошла корректно."
+            }
+        }
+        catch {
+            Write-Host "Произошла ошибка во время установки 7-Zip: $_" -ForegroundColor Red
+            Pause
+            Exit
+        }
+    } elseif ($response -eq "n" -or $response -eq "т") {
+        Write-Host "Установка 7-Zip пропущена. Некоторые программы могут не работать корректно." -ForegroundColor Yellow
     } else {
-        throw "7-Zip не установлен. Убедитесь, что установка прошла корректно."
+        Write-Host "Неверный ответ. Установка 7-Zip пропущена." -ForegroundColor Yellow
     }
 }
-catch {
-    Write-Host "Произошла ошибка во время установки 7-Zip: $_" -ForegroundColor Red
-    Pause
-    Exit
-}
+
+# Если 7-Zip не установлен, предупреждаем пользователя и продолжаем выполнение
+if (-Not (Test-Path -Path $sevenZipPath)) {
+    Write-Host "7-Zip не установлен. Некоторые программы могут не работать корректно. Продолжить? (y/н, n/т)" -ForegroundColor Yellow
+    $response = Read-Host
+    if ($response -eq "y" -or $response -eq "н") {
+        Write-Host "Продолжаем выполнение без 7-Zip." -ForegroundColor Yellow
+    } elseif ($response -eq "n" -or $response -eq "т") {
+        Write-Host "Выход из программы." -ForegroundColor Green
+        Exit
+    } else {
+        Write-Host "Неверный ответ. Выход из программы." -ForegroundColor Red
+        Exit
+    }
 }
 
 # Список программ с их URL, аргументами установки, именами установщиков и (опционально) архивами
@@ -625,30 +647,52 @@ $sevenZipPath = $sevenZipPaths | Where-Object { Test-Path $_ } | Select-Object -
 
 # Проверка наличия 7-Zip
 if (-Not (Test-Path -Path $sevenZipPath)) {
-    Write-Host "7-Zip не найден по пути $sevenZipPath. Пытаемся установить..." -ForegroundColor Yellow
+    Write-Host "7-Zip не найден по пути $sevenZipPath. Рекомендуется установить его для корректной работы некоторых программ." -ForegroundColor Yellow
+    
+    $response = Read-Host "Хотите установить 7-Zip? (y/н, n/т)"
+    if ($response -eq "y" -or $response -eq "н") {
+        $sevenZipInstallerUrl = "https://www.7-zip.org/a/7z2409-x64.exe"
+        $sevenZipInstallerPath = "$env:TEMP\7z2409-x64.exe"
 
-    $sevenZipInstallerUrl = "https://www.7-zip.org/a/7z2409-x64.exe"
-    $sevenZipInstallerPath = "$env:TEMP\7z2409-x64.exe"
+        try {
+            Write-Host "Скачивание установщика 7-Zip..." -ForegroundColor Cyan
+            Start-BitsTransfer -Source $sevenZipInstallerUrl -Destination $sevenZipInstallerPath -ErrorAction Stop
 
-try {
-    Write-Host "Скачивание установщика 7-Zip..." -ForegroundColor Cyan
-    Start-BitsTransfer -Source $sevenZipInstallerUrl -Destination $sevenZipInstallerPath -ErrorAction Stop
+            Write-Host "Установка 7-Zip..." -ForegroundColor Cyan
+            Start-Process -FilePath $sevenZipInstallerPath -ArgumentList "/S" -Wait -ErrorAction Stop
 
-    Write-Host "Установка 7-Zip..." -ForegroundColor Cyan
-    Start-Process -FilePath $sevenZipInstallerPath -ArgumentList "/S" -Wait -ErrorAction Stop
-
-    if (Test-Path -Path $sevenZipPath) {
-        Write-Host "7-Zip успешно установлен!" -ForegroundColor Green
-        Remove-Item -Path $sevenZipInstallerPath -Force -ErrorAction SilentlyContinue
+            if (Test-Path -Path $sevenZipPath) {
+                Write-Host "7-Zip успешно установлен!" -ForegroundColor Green
+                Remove-Item -Path $sevenZipInstallerPath -Force -ErrorAction SilentlyContinue
+            } else {
+                throw "7-Zip не установлен. Убедитесь, что установка прошла корректно."
+            }
+        }
+        catch {
+            Write-Host "Произошла ошибка во время установки 7-Zip: $_" -ForegroundColor Red
+            Pause
+            Exit
+        }
+    } elseif ($response -eq "n" -or $response -eq "т") {
+        Write-Host "Установка 7-Zip пропущена. Некоторые программы могут не работать корректно." -ForegroundColor Yellow
     } else {
-        throw "7-Zip не установлен. Убедитесь, что установка прошла корректно."
+        Write-Host "Неверный ответ. Установка 7-Zip пропущена." -ForegroundColor Yellow
     }
 }
-catch {
-    Write-Host "Произошла ошибка во время установки 7-Zip: $_" -ForegroundColor Red
-    Pause
-    Exit
-}
+
+# Если 7-Zip не установлен, предупреждаем пользователя и продолжаем выполнение
+if (-Not (Test-Path -Path $sevenZipPath)) {
+    Write-Host "7-Zip не установлен. Некоторые программы могут не работать корректно. Продолжить? (y/н, n/т)" -ForegroundColor Yellow
+    $response = Read-Host
+    if ($response -eq "y" -or $response -eq "н") {
+        Write-Host "Продолжаем выполнение без 7-Zip." -ForegroundColor Yellow
+    } elseif ($response -eq "n" -or $response -eq "т") {
+        Write-Host "Выход из программы." -ForegroundColor Green
+        Exit
+    } else {
+        Write-Host "Неверный ответ. Выход из программы." -ForegroundColor Red
+        Exit
+    }
 }
 
 # Список программ с их URL, аргументами установки, именами установщиков и (опционально) архивами
