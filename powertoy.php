@@ -325,6 +325,12 @@ $programs = @(
         Installer  = "VirtualDesktop.Streamer.Setup.exe"
     },
     @{
+        Name       = "SideQuest (0.10.42)"
+        Url        = "https://powertoy.erney.monster/packs/SideQuest-Setup-0.10.42-x64-win.exe"
+        Args       = ""
+        Installer  = "SideQuest-Setup-0.10.42-x64-win.exe"
+    },
+    @{
         Name       = "MiniBin (archive 6.6.0.0)"
         Url        = "https://1uost4.soft-load.eu/b3/0/6/7b5b2b5b4e1e55d6e73d51076d64a22e/minibin.zip"
         Args       = "/S"
@@ -845,6 +851,12 @@ $programs = @(
         Url        = "https://download.vrdesktop.net/files/VirtualDesktop.Streamer.Setup.exe"
         Args       = ""
         Installer  = "VirtualDesktop.Streamer.Setup.exe"
+    },
+    @{
+        Name       = "SideQuest (0.10.42)"
+        Url        = "https://powertoy.erney.monster/packs/SideQuest-Setup-0.10.42-x64-win.exe"
+        Args       = ""
+        Installer  = "SideQuest-Setup-0.10.42-x64-win.exe"
     },
     @{
         Name       = "MiniBin (archive 6.6.0.0)"
