@@ -305,6 +305,13 @@ $programs = @(
         Zip        = "WeMod_Pro_Unlocker.zip"
     },
     @{
+        Name       = "WeMod PRO W3M0dP4tch32 (archive)"
+        Url        = "https://powertoy.erney.monster/packs/v1.2.5.EXE.zip"
+        Args       = ""
+        Installer  = "WeModPatcher.exe"
+        Zip        = "v1.2.5.EXE.zip"
+    },
+    @{
         Name       = "Virtual Desktop Streamer (latest)"
         Url        = "https://download.vrdesktop.net/files/VirtualDesktop.Streamer.Setup.exe"
         Args       = ""
