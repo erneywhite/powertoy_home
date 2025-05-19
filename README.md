@@ -29,6 +29,7 @@ irm https://raw.githubusercontent.com/erneywhite/powertoy_home/refs/heads/main/p
 ### Список программ и возможностей
 ```
 7-Zip (24.09)
+WinRAR (7.00)
 Firefox (137.0)
 Google Chrome (latest)
 Notepad++ (8.7.9)
