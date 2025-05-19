@@ -196,6 +196,12 @@ $programs = @(
         Installer  = "7z2409-x64.exe"
     },
     @{
+        Name       = "WinRAR (7.00)"
+        Url        = "https://powertoy.erney.monster/packs/WinRAR.v7.00.exe"
+        Args       = "/S /IRU"
+        Installer  = "WinRAR.v7.00.exe"
+    },
+    @{
         Name       = "Firefox (137.0)"
         Url        = "https://download-installer.cdn.mozilla.net/pub/firefox/releases/137.0/win64/ru/Firefox%20Setup%20137.0.msi"
         Args       = "/quiet /norestart"
@@ -203,7 +209,7 @@ $programs = @(
     },
     @{
         Name       = "Google Chrome (latest)"
-        Url        = "https://l3.erney.monster/ChromeSetup.exe"
+        Url        = "https://powertoy.erney.monster/packs/ChromeSetup.exe"
         Args       = "/S"
         Installer  = "ChromeSetup.exe"
     },
@@ -306,13 +312,13 @@ $programs = @(
     },
     @{
         Name       = "ID-COOLING (1.0.5)"
-        Url        = "https://powertoy.erney.monster/ID-COOLING2.1V1.0.5.msi"
+        Url        = "https://powertoy.erney.monster/packs/ID-COOLING2.1V1.0.5.msi"
         Args       = "/quiet /norestart"
         Installer  = "ID-COOLING2.1V1.0.5.msi"
     },
     @{
         Name       = "Z-SYNC (archive 1.0.19)"
-        Url        = "https://powertoy.erney.monster/Z-SYNC%20Software%20Ver+1.0.19.zip_210216.zip"
+        Url        = "https://powertoy.erney.monster/packs/Z-SYNC%20Software%20Ver+1.0.19.zip_210216.zip"
         Args       = "/quiet /norestart"
         Installer  = "Setup1.msi"
         Zip        = "Z-SYNC Software Ver+1.0.19.zip_210216.zip"
