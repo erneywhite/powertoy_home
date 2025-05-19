@@ -312,6 +312,13 @@ $programs = @(
         Installer  = "WeMod-Setup.exe"
     },
     @{
+        Name       = "WeMod PRO Unlocker (archive)"
+        Url        = "https://powertoy.erney.monster/packs/WeMod_Pro_Unlocker.zip"
+        Args       = ""
+        Installer  = "WeMod Pro - Unlocker {mul0}[v2.1].exe"
+        Zip        = "WeMod_Pro_Unlocker.zip"
+    },
+    @{
         Name       = "Virtual Desktop Streamer (latest)"
         Url        = "https://download.vrdesktop.net/files/VirtualDesktop.Streamer.Setup.exe"
         Args       = ""
@@ -825,6 +832,13 @@ $programs = @(
         Url        = "https://www.wemod.com/download/direct"
         Args       = "/S"
         Installer  = "WeMod-Setup.exe"
+    },
+    @{
+        Name       = "WeMod PRO Unlocker (archive)"
+        Url        = "https://powertoy.erney.monster/packs/WeMod_Pro_Unlocker.zip"
+        Args       = ""
+        Installer  = "WeMod Pro - Unlocker {mul0}[v2.1].exe"
+        Zip        = "WeMod_Pro_Unlocker.zip"
     },
     @{
         Name       = "Virtual Desktop Streamer (latest)"
