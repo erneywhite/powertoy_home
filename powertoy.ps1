@@ -130,6 +130,11 @@ function Write-CenteredMessage {
     [console]::WriteLine("$padding$message")
 }
 
+$sevenZipPaths = @(
+    Join-Path $env:ProgramFiles "7-Zip\\7z.exe"
+    Join-Path ${env:ProgramFiles(x86)} "7-Zip\\7z.exe"
+)
+
 $sevenZipPath = $sevenZipPaths | Where-Object { Test-Path $_ } | Select-Object -First 1
 
 # Проверка наличия 7-Zip
