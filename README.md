@@ -54,8 +54,10 @@ MiniBin (archive 6.6.0.0)
 ID-COOLING (1.0.5)
 Z-SYNC (archive 1.0.19)
 Stream Dock (latest)
+Logitech G HUB (latest)
 LibreOffice (25.2.2)
 WinDirStat (2.2.2)
+Paragon Hard Disk Manager Ru (archive&portable 17.20.9)
 ```
 ---
 
