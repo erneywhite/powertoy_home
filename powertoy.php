@@ -364,6 +364,12 @@ $programs = @(
         Installer  = "Stream-Dock-Installer_Windows.exe"
     },
     @{
+        Name       = "Logitech G HUB (latest)"
+        Url        = "https://download01.logi.com/web/ftp/pub/techsupport/gaming/lghub_installer.exe"
+        Args       = ""
+        Installer  = "lghub_installer.exe"
+    },
+    @{
         Name       = "LibreOffice (25.2.2)"
         Url        = "https://ftp.byfly.by/pub/tdf/libreoffice/stable/25.2.2/win/x86_64/LibreOffice_25.2.2_Win_x86-64.msi"
         Args       = "/quiet /norestart"
@@ -897,6 +903,12 @@ $programs = @(
         Url        = "https://download1979.mediafire.com/83pu8n5j5ejgntt4Fs0jTIZUJSz-7GhIgIL5rFp1rMCvlqPiTMipD_7v70aj5NpkbKy-gVFRha8eZoM12-i26JA49Ji-YCP-InlPTKUHfwkOI5OxkyUsVMly3X64sEla7Rb_3GsnnCjkHEex9OyC65-nXV7XUk_EbKCaapw4JqKQ/bo00bunrx3nwqbc/Stream-Dock-Installer_Windows.exe"
         Args       = ""
         Installer  = "Stream-Dock-Installer_Windows.exe"
+    },
+    @{
+        Name       = "Logitech G HUB (latest)"
+        Url        = "https://download01.logi.com/web/ftp/pub/techsupport/gaming/lghub_installer.exe"
+        Args       = ""
+        Installer  = "lghub_installer.exe"
     },
     @{
         Name       = "LibreOffice (25.2.2)"
