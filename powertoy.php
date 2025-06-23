@@ -380,6 +380,13 @@ $programs = @(
         Url        = "https://github.com/windirstat/windirstat/releases/download/release/v2.2.2/WinDirStat-x64.msi"
         Args       = "/quiet /norestart"
         Installer  = "WinDirStat-x64.msi"
+    },
+    @{
+        Name       = "Paragon Hard Disk Manager Ru (archive&portable 17.20.9)"
+        Url        = "https://powertoy.erney.monster/packs/Paragon_Hard_Disk_Manager.zip"
+        Args       = ""
+        Installer  = "Paragon_Hard_Disk_Manager.exe"
+        Zip        = "Paragon_Hard_Disk_Manager.zip"
     }
     # Добавьте больше программ по аналогии
 )
@@ -921,6 +928,13 @@ $programs = @(
         Url        = "https://github.com/windirstat/windirstat/releases/download/release/v2.2.2/WinDirStat-x64.msi"
         Args       = "/quiet /norestart"
         Installer  = "WinDirStat-x64.msi"
+    },
+    @{
+        Name       = "Paragon Hard Disk Manager Ru (archive&portable 17.20.9)"
+        Url        = "https://powertoy.erney.monster/packs/Paragon_Hard_Disk_Manager.zip"
+        Args       = ""
+        Installer  = "Paragon_Hard_Disk_Manager.exe"
+        Zip        = "Paragon_Hard_Disk_Manager.zip"
     }
     # Добавьте больше программ по аналогии
 )
