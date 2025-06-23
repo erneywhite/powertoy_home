@@ -350,6 +350,12 @@ $programs = @(
         Installer  = "Stream-Dock-Installer_Windows.exe"
     },
     @{
+        Name       = "Logitech G HUB (latest)"
+        Url        = "https://download01.logi.com/web/ftp/pub/techsupport/gaming/lghub_installer.exe"
+        Args       = ""
+        Installer  = "lghub_installer.exe"
+    },
+    @{
         Name       = "LibreOffice (25.2.2)"
         Url        = "https://ftp.byfly.by/pub/tdf/libreoffice/stable/25.2.2/win/x86_64/LibreOffice_25.2.2_Win_x86-64.msi"
         Args       = "/quiet /norestart"
