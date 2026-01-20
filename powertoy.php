@@ -294,10 +294,10 @@ $programs = @(
         Installer  = "NVIDIA_app_v11.0.3.218.exe"
     },
     @{
-        Name       = "Synology Drive Client (3.5.2-16111)"
-        Url        = "https://global.synologydownload.com/download/Utility/SynologyDriveClient/3.5.2-16111/Windows/Installer/i686/Synology%20Drive%20Client-3.5.2-16111-x86.exe"
+        Name       = "Synology Drive Client (4.0.1-17885)"
+        Url        = "https://global.synologydownload.com/download/Utility/SynologyDriveClient/4.0.1-17885/Windows/Installer/i686/Synology%20Drive%20Client-4.0.1-17885-x86.exe"
         Args       = "/S"
-        Installer  = "Synology%20Drive%20Client-3.5.2-16111-x86.exe"
+        Installer  = "Synology%20Drive%20Client-4.0.1-17885-x86.exe"
     },
     @{
         Name       = "CurseForge (latest)"
@@ -368,6 +368,12 @@ $programs = @(
         Url        = "https://download01.logi.com/web/ftp/pub/techsupport/gaming/lghub_installer.exe"
         Args       = ""
         Installer  = "lghub_installer.exe"
+    },
+    @{
+        Name       = "RK Keyboard (latest)"
+        Url        = "https://s3.us-east-1.amazonaws.com/s3.downloadcenter/RK_Keyboard_Software_Setup_V4.6%2020250617.exe"
+        Args       = ""
+        Installer  = "RK_Keyboard_Software_Setup_V4.6%2020250617.exe"
     },
     @{
         Name       = "LibreOffice (25.2.2)"
@@ -842,10 +848,10 @@ $programs = @(
         Installer  = "NVIDIA_app_v11.0.3.218.exe"
     },
     @{
-        Name       = "Synology Drive Client (3.5.2-16111)"
-        Url        = "https://global.synologydownload.com/download/Utility/SynologyDriveClient/3.5.2-16111/Windows/Installer/i686/Synology%20Drive%20Client-3.5.2-16111-x86.exe"
+        Name       = "Synology Drive Client (4.0.1-17885)"
+        Url        = "https://global.synologydownload.com/download/Utility/SynologyDriveClient/4.0.1-17885/Windows/Installer/i686/Synology%20Drive%20Client-4.0.1-17885-x86.exe"
         Args       = "/S"
-        Installer  = "Synology%20Drive%20Client-3.5.2-16111-x86.exe"
+        Installer  = "Synology%20Drive%20Client-4.0.1-17885-x86.exe"
     },
     @{
         Name       = "CurseForge (latest)"
@@ -916,6 +922,12 @@ $programs = @(
         Url        = "https://download01.logi.com/web/ftp/pub/techsupport/gaming/lghub_installer.exe"
         Args       = ""
         Installer  = "lghub_installer.exe"
+    },
+    @{
+        Name       = "RK Keyboard (latest)"
+        Url        = "https://s3.us-east-1.amazonaws.com/s3.downloadcenter/RK_Keyboard_Software_Setup_V4.6%2020250617.exe"
+        Args       = ""
+        Installer  = "RK_Keyboard_Software_Setup_V4.6%2020250617.exe"
     },
     @{
         Name       = "LibreOffice (25.2.2)"
