@@ -367,6 +367,12 @@ $programs = @(
         Installer  = "LibreOffice_25.2.2_Win_x86-64.msi"
     },
     @{
+        Name       = "HiBitUninstaller (3.2.70)"
+        Url        = "https://powertoy.erney.monster/packs/HiBitUninstaller-setup-3.2.70.exe"
+        Args       = ""
+        Installer  = "HiBitUninstaller-setup-3.2.70.exe"
+    },
+    @{
         Name       = "WinDirStat (2.2.2)"
         Url        = "https://github.com/windirstat/windirstat/releases/download/release/v2.2.2/WinDirStat-x64.msi"
         Args       = "/quiet /norestart"
