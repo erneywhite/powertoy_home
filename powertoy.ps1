@@ -1,3 +1,4 @@
+# Устанавливаем кодировку UTF-8 для входных и выходных данных
 [Console]::InputEncoding = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
@@ -201,10 +202,10 @@ $programs = @(
         Installer  = "WinRAR.v7.00.exe"
     },
     @{
-        Name       = "Firefox (137.0)"
-        Url        = "https://download-installer.cdn.mozilla.net/pub/firefox/releases/137.0/win64/ru/Firefox%20Setup%20137.0.msi"
+        Name       = "Firefox (147.0.2)"
+        Url        = "https://download-installer.cdn.mozilla.net/pub/firefox/releases/147.0.2/win64/ru/Firefox%20Setup%20147.0.2.msi"
         Args       = "/quiet /norestart"
-        Installer  = "Firefox%20Setup%20137.0.msi"
+        Installer  = "Firefox%20Setup%20147.0.2.msi"
     },
     @{
         Name       = "Google Chrome (latest)"
@@ -213,10 +214,10 @@ $programs = @(
         Installer  = "ChromeSetup.exe"
     },
     @{
-        Name       = "Notepad++ (8.7.9)"
-        Url        = "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.7.9/npp.8.7.9.Installer.x64.exe"
+        Name       = "Notepad++ (8.9.1)"
+        Url        = "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.1/npp.8.9.1.Installer.exe"
         Args       = "/S"
-        Installer  = "npp.8.7.9.Installer.x64.exe"
+        Installer  = "npp.8.9.1.Installer.exe"
     },
     @{
         Name       = "Steam (latest)"
@@ -225,10 +226,10 @@ $programs = @(
         Installer  = "SteamSetup.exe"
     },
     @{
-        Name       = "Epic Games Store (18.1.3)"
-        Url        = "https://epicgames-download1.akamaized.net/Builds/UnrealEngineLauncher/Installers/Win32/EpicInstaller-18.1.3.msi?launcherfilename=EpicInstaller-18.1.3.msi"
+        Name       = "Epic Games Store (19.1.5)"
+        Url        = "https://epicgames-download1.akamaized.net/Builds/UnrealEngineLauncher/Installers/Windows/EpicInstaller-19.1.5.msi?launcherfilename=EpicInstaller-19.1.5.msi"
         Args       = "/quiet /norestart"
-        Installer  = "EpicInstaller-18.1.3.msi"
+        Installer  = "EpicInstaller-19.1.5.msi"
     },
     @{
         Name       = "Discord (latest)"
@@ -237,10 +238,10 @@ $programs = @(
         Installer  = "DiscordSetup.exe"
     },
     @{
-        Name       = "AmneziaVPN (4.8.5.0)"
-        Url        = "https://github.com/amnezia-vpn/amnezia-client/releases/download/4.8.5.0/AmneziaVPN_4.8.5.0_x64.exe"
+        Name       = "AmneziaVPN (4.8.12.9)"
+        Url        = "https://github.com/amnezia-vpn/amnezia-client/releases/download/4.8.12.9/AmneziaVPN_4.8.12.9_x64.exe"
         Args       = "/S"
-        Installer  = "AmneziaVPN_4.8.5.0_x64.exe"
+        Installer  = "AmneziaVPN_4.8.12.9_x64.exe"
     },
     @{
         Name       = "Spotify (latest)"
@@ -255,8 +256,8 @@ $programs = @(
         Installer  = "1PasswordSetup-latest.exe"
     },
     @{
-        Name       = "Windhawk (1.5.1)"
-        Url        = "https://github.com/ramensoftware/windhawk/releases/download/v1.5.1/windhawk_setup.exe"
+        Name       = "Windhawk (1.7.3)"
+        Url        = "https://github.com/ramensoftware/windhawk/releases/download/v1.7.3/windhawk_setup.exe"
         Args       = "/S"
         Installer  = "windhawk_setup.exe"
     },
@@ -267,14 +268,14 @@ $programs = @(
         Installer  = "qbittorrent_5.0.4_x64_setup.exe"
     },
     @{
-        Name       = "Telegram (5.13.1)"
-        Url        = "https://td.telegram.org/tx64/tsetup-x64.5.13.1.exe"
+        Name       = "Telegram (6.4.2)"
+        Url        = "https://td.telegram.org/tx64/tsetup-x64.6.4.2.exe"
         Args       = "/S"
-        Installer  = "tsetup-x64.5.13.1.exe"
+        Installer  = "tsetup-x64.6.4.2.exe"
     },
-        @{
-        Name       = "NVIDIA App (11.0.3.218)"
-        Url        = "https://us.download.nvidia.com/nvapp/client/11.0.3.218/NVIDIA_app_v11.0.3.218.exe"
+    @{
+        Name       = "NVIDIA App (11.0.6.383)"
+        Url        = "https://uk.download.nvidia.com/nvapp/client/11.0.6.383/NVIDIA_app_v11.0.6.383.exe"
         Args       = "/S"
         Installer  = "NVIDIA_app_v11.0.3.218.exe"
     },
@@ -297,18 +298,10 @@ $programs = @(
         Installer  = "WeMod-Setup.exe"
     },
     @{
-        Name       = "WeMod PRO Unlocker (archive)"
-        Url        = "https://powertoy.erney.monster/packs/WeMod_Pro_Unlocker.zip"
-        Args       = ""
-        Installer  = "WeMod Pro - Unlocker {mul0}[v2.1].exe"
-        Zip        = "WeMod_Pro_Unlocker.zip"
-    },
-    @{
-        Name       = "WeMod PRO W3M0dP4tch32 (archive)"
-        Url        = "https://powertoy.erney.monster/packs/v1.2.5.EXE.zip"
+        Name       = "WeMod PRO Unlocker"
+        Url        = "https://powertoy.erney.monster/packs/WeModPatcher.exe"
         Args       = ""
         Installer  = "WeModPatcher.exe"
-        Zip        = "v1.2.5.EXE.zip"
     },
     @{
         Name       = "Virtual Desktop Streamer (latest)"
@@ -324,7 +317,7 @@ $programs = @(
     },
     @{
         Name       = "MiniBin (archive 6.6.0.0)"
-        Url        = "https://1uost4.soft-load.eu/b3/0/6/7b5b2b5b4e1e55d6e73d51076d64a22e/minibin.zip"
+        Url        = "https://powertoy.erney.monster/packs/minibin.zip"
         Args       = "/S"
         Installer  = "MiniBin-6.6.0.0-Setup.exe"
         Zip        = "minibin.zip"
@@ -361,8 +354,8 @@ $programs = @(
         Installer  = "RK_Keyboard_Software_Setup_V4.6%2020250617.exe"
     },
     @{
-        Name       = "LibreOffice (25.2.2)"
-        Url        = "https://ftp.byfly.by/pub/tdf/libreoffice/stable/25.2.2/win/x86_64/LibreOffice_25.2.2_Win_x86-64.msi"
+        Name       = "LibreOffice (25.8.4)"
+        Url        = "https://ftp.byfly.by/pub/tdf/libreoffice/stable/25.8.4/win/x86_64/LibreOffice_25.8.4_Win_x86-64.msi"
         Args       = "/quiet /norestart"
         Installer  = "LibreOffice_25.2.2_Win_x86-64.msi"
     },
