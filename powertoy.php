@@ -330,11 +330,10 @@ $programs = @(
         Installer  = "SideQuest-Setup-0.10.42-x64-win.exe"
     },
     @{
-        Name       = "MiniBin (archive 6.6.0.0)"
-        Url        = "https://powertoy.erney.monster/packs/minibin.zip"
-        Args       = "/S"
+        Name       = "MiniBin (6.6.0.0)"
+        Url        = "https://powertoy.erney.monster/packs/MiniBin-6.6.0.0-Setup.exe"
+        Args       = ""
         Installer  = "MiniBin-6.6.0.0-Setup.exe"
-        Zip        = "minibin.zip"
     },
     @{
         Name       = "ID-COOLING (1.0.5)"
@@ -351,7 +350,7 @@ $programs = @(
     },
     @{
         Name       = "Stream Dock (latest)"
-        Url        = "https://download1979.mediafire.com/83pu8n5j5ejgntt4Fs0jTIZUJSz-7GhIgIL5rFp1rMCvlqPiTMipD_7v70aj5NpkbKy-gVFRha8eZoM12-i26JA49Ji-YCP-InlPTKUHfwkOI5OxkyUsVMly3X64sEla7Rb_3GsnnCjkHEex9OyC65-nXV7XUk_EbKCaapw4JqKQ/bo00bunrx3nwqbc/Stream-Dock-Installer_Windows.exe"
+        Url        = "https://powertoy.erney.monster/packs/Stream-Dock-Installer_Windows.exe"
         Args       = ""
         Installer  = "Stream-Dock-Installer_Windows.exe"
     },
@@ -882,11 +881,10 @@ $programs = @(
         Installer  = "SideQuest-Setup-0.10.42-x64-win.exe"
     },
     @{
-        Name       = "MiniBin (archive 6.6.0.0)"
-        Url        = "https://powertoy.erney.monster/packs/minibin.zip"
-        Args       = "/S"
+        Name       = "MiniBin (6.6.0.0)"
+        Url        = "https://powertoy.erney.monster/packs/MiniBin-6.6.0.0-Setup.exe"
+        Args       = ""
         Installer  = "MiniBin-6.6.0.0-Setup.exe"
-        Zip        = "minibin.zip"
     },
     @{
         Name       = "ID-COOLING (1.0.5)"
@@ -903,7 +901,7 @@ $programs = @(
     },
     @{
         Name       = "Stream Dock (latest)"
-        Url        = "https://download1979.mediafire.com/83pu8n5j5ejgntt4Fs0jTIZUJSz-7GhIgIL5rFp1rMCvlqPiTMipD_7v70aj5NpkbKy-gVFRha8eZoM12-i26JA49Ji-YCP-InlPTKUHfwkOI5OxkyUsVMly3X64sEla7Rb_3GsnnCjkHEex9OyC65-nXV7XUk_EbKCaapw4JqKQ/bo00bunrx3nwqbc/Stream-Dock-Installer_Windows.exe"
+        Url        = "https://powertoy.erney.monster/packs/Stream-Dock-Installer_Windows.exe"
         Args       = ""
         Installer  = "Stream-Dock-Installer_Windows.exe"
     },
