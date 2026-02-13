@@ -373,10 +373,10 @@ $programs = @(
         Installer  = "LibreOffice_25.2.2_Win_x86-64.msi"
     },
     @{
-        Name       = "HiBitUninstaller (3.2.70)"
-        Url        = "https://powertoy.erney.monster/packs/HiBitUninstaller-setup-3.2.70.exe"
+        Name       = "HiBitUninstaller (4.0.10)"
+        Url        = "https://powertoy.erney.monster/packs/HiBitUninstaller-setup-4.0.10.exe"
         Args       = ""
-        Installer  = "HiBitUninstaller-setup-3.2.70.exe"
+        Installer  = "HiBitUninstaller-setup-4.0.10.exe"
     },
     @{
         Name       = "WinDirStat (2.2.2)"
@@ -924,10 +924,10 @@ $programs = @(
         Installer  = "LibreOffice_25.2.2_Win_x86-64.msi"
     },
     @{
-        Name       = "HiBitUninstaller (3.2.70)"
-        Url        = "https://powertoy.erney.monster/packs/HiBitUninstaller-setup-3.2.70.exe"
+        Name       = "HiBitUninstaller (4.0.10)"
+        Url        = "https://powertoy.erney.monster/packs/HiBitUninstaller-setup-4.0.10.exe"
         Args       = ""
-        Installer  = "HiBitUninstaller-setup-3.2.70.exe"
+        Installer  = "HiBitUninstaller-setup-4.0.10.exe"
     },
     @{
         Name       = "WinDirStat (2.2.2)"
