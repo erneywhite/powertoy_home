@@ -1,72 +1,139 @@
-<h1 align="center">Автоматический установщик программ для Windows</h1>
+<h1 align="center">Powertoy Home</h1>
 
-<p align="center">PowerShell-скрипт для быстрой установки популярных программ в одно действие.</p>
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPL%20v3-blue.svg" alt="GPL v3"></a>
+  <img src="https://img.shields.io/badge/Platform-Windows%208%2B-0078D6?logo=windows&logoColor=white" alt="Windows 8+">
+  <img src="https://img.shields.io/badge/PowerShell-5.1%2B-5391FE?logo=powershell&logoColor=white" alt="PowerShell">
+  <img src="https://img.shields.io/badge/Программ-31-brightgreen" alt="31 programs">
+</p>
 
-<hr>
-
-## Для чего этот скрипт?
-
-Скрипт облегчит поиск и установку основных программ для простого пользователя. Автоматически скачает и установит выбранную программу из списка. При первом запуске проверяет наличие 7-Zip и при необходимости устанавливает его автоматически.
+<p align="center">Автоматический установщик программ для Windows в одну команду. Запусти — выбери программу из меню — готово.</p>
 
 ---
 
-## Как использовать?
+## Содержание
 
-### PowerShell (Windows 8 или позднее)
+- [Быстрый старт](#быстрый-старт)
+- [Как это работает](#как-это-работает)
+- [Список программ](#список-программ)
+- [Структура репозитория](#структура-репозитория)
+- [Добавление программы](#добавление-программы)
+- [Нюансы](#нюансы)
 
-1. Откройте PowerShell с правами администратора.
-2. Скопируйте и вставьте одну из команд:
+---
+
+## Быстрый старт
+
+Откройте **PowerShell от имени администратора** и запустите одну из команд:
 
 ```powershell
 irm https://powertoy.erney.monster | iex
 ```
 
-Альтернативная ссылка (GitHub):
+Альтернативная ссылка (напрямую с GitHub):
 
 ```powershell
 irm https://raw.githubusercontent.com/erneywhite/powertoy_home/refs/heads/main/powertoy.ps1 | iex
 ```
 
-3. Выберите программу из меню по номеру и нажмите Enter.
-4. Программа будет загружена и установлена автоматически.
+> ⚠️ Если скрипт запущен без прав администратора — автоматически предложит перезапуститься с повышением привилегий.
+
+---
+
+## Как это работает
+
+```
+1. Проверка прав администратора
+   └─ Если нет → предложит перезапуститься (Start-Process RunAs)
+2. Приветственный экран с ASCII-енотом на 3 секунды
+3. Проверка наличия 7-Zip
+   └─ Если нет → предложит установить автоматически
+4. Меню с нумерованным списком программ
+5. Установка по номеру
+   ├─ Обычный .exe/.msi → скачать BITS → Start-Process
+   └─ archive (.zip) → скачать BITS → 7-Zip распаковка → поиск .exe/.msi внутри
+6. Удаление %TEMP%\Installers после завершения
+```
 
 ---
 
 ## Список программ
 
-```
-7-Zip (24.09)
-WinRAR (7.00)
-Firefox (147.0.2)
-Google Chrome (latest)
-Notepad++ (8.9.1)
-Steam (latest)
-Epic Games Store (19.1.5)
-Discord (latest)
-AmneziaVPN (4.8.12.9)
-Spotify (latest)
-1Password (latest)
-Windhawk (1.7.3)
-qBittorrent (5.0.4)
-Telegram (6.4.2)
-NVIDIA App (11.0.6.383)
-Synology Drive Client (4.0.1-17885)
-CurseForge (latest)
-WeMod (latest)
-WeMod PRO Unlocker (archive)
-Virtual Desktop Streamer (latest)
-SideQuest (0.10.42)
-MiniBin (6.6.0.0)
-ID-COOLING (1.0.5)
-Z-SYNC (archive 1.0.19)
-Stream Dock (latest)
-Logitech G HUB (latest)
-RK Keyboard (latest)
-LibreOffice (25.8.4)
-HiBitUninstaller (4.0.10)
-WinDirStat (2.2.2)
-Paragon Hard Disk Manager Ru (archive & portable 17.20.9)
-```
+### Архиваторы и утилиты
+
+| # | Программа | Тип | Источник |
+|---|---------|------|--------|
+| 1 | 7-Zip (24.09) | .exe | 7-zip.org |
+| 2 | WinRAR (7.00) | .exe | powertoy.erney.monster |
+| 28 | LibreOffice (25.8.4) | .msi | ftp.byfly.by |
+| 29 | HiBitUninstaller (4.0.10) | .exe | powertoy.erney.monster |
+| 30 | WinDirStat (2.2.2) | .msi | github.com |
+| 31 | Paragon HDM Ru (17.20.9) | archive | powertoy.erney.monster |
+
+### Браузеры
+
+| # | Программа | Тип | Источник |
+|---|---------|------|--------|
+| 3 | Firefox (147.0.2) | .msi | mozilla.net |
+| 4 | Google Chrome (latest) | .exe | powertoy.erney.monster |
+
+### Мессенджеры и соцсети
+
+| # | Программа | Тип | Источник |
+|---|---------|------|--------|
+| 5 | Notepad++ (8.9.1) | .exe | github.com |
+| 8 | Discord (latest) | .exe | discordapp.net |
+| 13 | Telegram (6.4.2) | .exe | td.telegram.org |
+
+### Игры и гейминг
+
+| # | Программа | Тип | Источник |
+|---|---------|------|--------|
+| 6 | Steam (latest) | .exe | steamstatic.com |
+| 7 | Epic Games Store (19.1.5) | .msi | epicgames |
+| 17 | CurseForge (latest) | .exe | overwolf.com |
+| 18 | WeMod (latest) | .exe | wemod.com |
+| 19 | WeMod PRO Unlocker | .exe | powertoy.erney.monster |
+| 20 | Virtual Desktop Streamer (latest) | .exe | vrdesktop.net |
+| 21 | SideQuest (0.10.42) | .exe | powertoy.erney.monster |
+
+### VPN и безопасность
+
+| # | Программа | Тип | Источник |
+|---|---------|------|--------|
+| 9 | AmneziaVPN (4.8.12.9) | .exe | github.com |
+| 11 | 1Password (latest) | .exe | 1password.com |
+
+### Музыка и медиа
+
+| # | Программа | Тип | Источник |
+|---|---------|------|--------|
+| 10 | Spotify (latest) | .exe | scdn.co |
+
+### Системные утилиты Windows
+
+| # | Программа | Тип | Источник |
+|---|---------|------|--------|
+| 12 | Windhawk (1.7.3) | .exe | github.com |
+| 22 | MiniBin (6.6.0.0) | .exe | powertoy.erney.monster |
+
+### Торрент и облако
+
+| # | Программа | Тип | Источник |
+|---|---------|------|--------|
+| 13 | qBittorrent (5.0.4) | .exe | sourceforge.net |
+| 16 | Synology Drive Client (4.0.1) | .exe | synologydownload.com |
+
+### Драйверы и периферия
+
+| # | Программа | Тип | Источник |
+|---|---------|------|--------|
+| 15 | NVIDIA App (11.0.6.383) | .exe | nvidia.com |
+| 23 | ID-COOLING (1.0.5) | .msi | powertoy.erney.monster |
+| 24 | Z-SYNC (archive 1.0.19) | .zip | powertoy.erney.monster |
+| 25 | Stream Dock (latest) | .exe | powertoy.erney.monster |
+| 26 | Logitech G HUB (latest) | .exe | logi.com |
+| 27 | RK Keyboard (latest) | .exe | s3.amazonaws.com |
 
 ---
 
@@ -75,20 +142,57 @@ Paragon Hard Disk Manager Ru (archive & portable 17.20.9)
 ```
 powertoy_home/
 ├── powertoy.ps1   # Основной PowerShell-скрипт установщика
-├── powertoy.php   # Веб-страница / редирект (powertoy.erney.monster)
+├── powertoy.php   # Веб-страница / редирект для powertoy.erney.monster
 ├── favicon.ico    # Иконка сайта
 └── .gitignore
 ```
 
+`powertoy.php` отдаёт содержимое `powertoy.ps1` при запросе от PowerShell (`irm`) или отображает HTML-страницу в браузере.
+
 ---
+
+## Добавление программы
+
+Добавьте запись в массив `$programs` в `powertoy.ps1`:
+
+**Обычный .exe / .msi:**
+```powershell
+@{
+    Name      = "MyApp (1.0.0)"
+    Url       = "https://example.com/myapp-setup.exe"
+    Args      = "/S"
+    Installer = "myapp-setup.exe"
+},
+```
+
+**Файл в архиве (archive)** — необходим 7-Zip:
+```powershell
+@{
+    Name      = "MyApp (archive)"
+    Url       = "https://example.com/myapp.zip"
+    Args      = "/quiet"
+    Installer = "setup.msi"        # имя файла внутри архива
+    Zip       = "myapp.zip"        # обязательное поле для archive-типа
+},
+```
+
+Параметр `Args` для тихой установки:
+- `.exe` — обычно `/S` или `/silent`
+- `.msi` — обычно `/quiet /norestart`
+- если пустая строка `""` — скрипт запустит установщик без аргументов (графический мастер)
+
+---
+
+## Нюансы
 
 > [!NOTE]
 >
-> - **7-Zip**: при первом запуске автоматически проверяется и при отсутствии предлагается установка.
-> - **Права администратора**: скрипт требует запуска от имени администратора. Если запущен без прав — предложит перезапуститься автоматически.
-> - **Архивные программы**: пункты с пометкой `archive` требуют наличия 7-Zip для распаковки.
-> - **Сеть**: убедитесь в наличии стабильного интернет-соединения.
-> - **Безопасность**: используйте только официальные ссылки выше. Проверяйте целостность загружаемого кода.
+> - **Права администратора**: скрипт проверяет права сразу при запуске. Если недостаточно — предложит авто-перезапускинщерез `Start-Process RunAs`.
+> - **7-Zip**: необходим для установки программ с пометкой `archive`. При отсутствии скрипт предложит его установить.
+> - **BITS**: загрузка выполняется через `Start-BitsTransfer` — иногда работает медленнее `Invoke-WebRequest`, но надёжнее для больших файлов.
+> - **Временные файлы**: все установщики скачиваются в `%TEMP%\Installers` и удаляются после завершения работы скрипта.
+> - **WeMod PRO Unlocker**: неофициальный патчер. Используйте на свой страх и риск.
+> - **Безопасность**: запускайте скрипты `irm | iex` только из доверенных источников. При желании можно предварительно скачать `powertoy.ps1` и прочитать код вручную.
 
 ---
 
