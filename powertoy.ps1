@@ -4,20 +4,34 @@
 [Console]::InputEncoding  = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
-$ErrorActionPreference = 'Stop'
+# TLS 1.2 для всех HTTPS-запросов (PS 5.1 по умолчанию использует SSL3/TLS1.0)
+try {
+    [System.Net.ServicePointManager]::SecurityProtocol = `
+        [System.Net.ServicePointManager]::SecurityProtocol -bor `
+        [System.Net.SecurityProtocolType]::Tls12
+} catch {}
 
-# --- Утилиты ----------------------------------------------------------------
+$ErrorActionPreference = 'Stop'
+$logPath = Join-Path $env:TEMP 'powertoy.log'
+
+# --- Лог -------------------------------------------------------------------
+
+function Write-PtLog {
+    param([string]$Message, [string]$Level = 'INFO')
+    $line = "[{0}] [{1}] {2}" -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $Level, $Message
+    try { Add-Content -Path $logPath -Value $line -Encoding UTF8 } catch {}
+}
+
+# --- Утилиты ---------------------------------------------------------------
 
 function Read-YesNo {
-    param(
-        [Parameter(Mandatory)] [string]$Prompt
-    )
+    param([Parameter(Mandatory)] [string]$Prompt)
     while ($true) {
         $resp = Read-Host "$Prompt (y/н, n/т)"
         switch -Regex ($resp) {
             '^(y|н)$' { return $true }
             '^(n|т)$' { return $false }
-            default   { Write-Host "Неверный ответ. Введите y/н или n/т." -ForegroundColor Yellow }
+            default   { Write-Host 'Неверный ответ. Введите y/н или n/т.' -ForegroundColor Yellow }
         }
     }
 }
@@ -55,8 +69,8 @@ function Get-SevenZipPath {
 }
 
 function Install-SevenZip {
-    $url     = 'https://www.7-zip.org/a/7z2409-x64.exe'
-    $tmp     = Join-Path $env:TEMP '7z2409-x64.exe'
+    $url = 'https://www.7-zip.org/a/7z2409-x64.exe'
+    $tmp = Join-Path $env:TEMP '7z2409-x64.exe'
 
     Write-Host 'Скачивание установщика 7-Zip...' -ForegroundColor Cyan
     Start-BitsTransfer -Source $url -Destination $tmp -ErrorAction Stop
@@ -67,14 +81,163 @@ function Install-SevenZip {
     Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue
 
     $path = Get-SevenZipPath
-    if (-not $path) {
-        throw '7-Zip не установлен. Проверьте корректность установки.'
-    }
+    if (-not $path) { throw '7-Zip не установлен. Проверьте корректность установки.' }
     Write-Host '7-Zip успешно установлен!' -ForegroundColor Green
     return $path
 }
 
-# --- Проверка прав администратора -------------------------------------------
+# --- Прогресс-бар скачивания -----------------------------------------------
+
+function Write-DownloadProgress {
+    param([Parameter(Mandatory)] [long]$Received, [Parameter(Mandatory)] [long]$Total)
+
+    $width = [Console]::WindowWidth - 1
+
+    if ($Total -le 0) {
+        $receivedMb = [math]::Round($Received / 1MB, 1)
+        $line = "  Скачано: $receivedMb MB"
+    } else {
+        $pct = [math]::Min(100, [int](($Received / $Total) * 100))
+        $barWidth = 30
+        $filled = [int]([math]::Floor($pct * $barWidth / 100))
+        $bar = ('█' * $filled) + ('░' * ($barWidth - $filled))
+        $receivedMb = [math]::Round($Received / 1MB, 1)
+        $totalMb    = [math]::Round($Total / 1MB, 1)
+        $line = "  [$bar] {0,3}%  {1,5} / {2,5} MB" -f $pct, $receivedMb, $totalMb
+    }
+
+    if ($line.Length -lt $width) { $line = $line.PadRight($width) }
+    [Console]::Write("`r$line")
+}
+
+function Invoke-DownloadWithProgress {
+    param(
+        [Parameter(Mandatory)] [string]$Url,
+        [Parameter(Mandatory)] [string]$Destination,
+        [Parameter(Mandatory)] [string]$DisplayName
+    )
+
+    Write-Host "Скачивание $DisplayName..." -ForegroundColor Cyan
+    Write-PtLog "Download start: $DisplayName ($Url)"
+
+    $job = Start-BitsTransfer -Source $Url -Destination $Destination `
+        -Asynchronous -DisplayName $DisplayName -ErrorAction Stop
+
+    try {
+        while ($job.JobState -ne 'Transferred' -and $job.JobState -ne 'Error') {
+            if ($job.BytesTotal -gt 0) {
+                Write-DownloadProgress -Received $job.BytesTransferred -Total $job.BytesTotal
+            }
+            Start-Sleep -Milliseconds 200
+        }
+
+        if ($job.JobState -eq 'Transferred') {
+            Write-DownloadProgress -Received $job.BytesTotal -Total $job.BytesTotal
+            [Console]::WriteLine()
+            Complete-BitsTransfer -BitsJob $job
+            Write-PtLog "Download done: $DisplayName ($($job.BytesTotal) bytes)"
+        } else {
+            $errMsg = $job.ErrorDescription
+            Remove-BitsTransfer -BitsJob $job -ErrorAction SilentlyContinue
+            Write-PtLog "Download failed: $DisplayName — $errMsg" 'ERROR'
+            throw "Ошибка BITS: $errMsg"
+        }
+    } catch {
+        if ($job -and $job.JobState -ne 'Transferred') {
+            Remove-BitsTransfer -BitsJob $job -ErrorAction SilentlyContinue
+        }
+        throw
+    }
+}
+
+function Get-CachedOrDownload {
+    param(
+        [Parameter(Mandatory)] [string]$Url,
+        [Parameter(Mandatory)] [string]$Destination,
+        [Parameter(Mandatory)] [string]$DisplayName
+    )
+
+    if (Test-Path -LiteralPath $Destination) {
+        $size = (Get-Item -LiteralPath $Destination).Length
+        if ($size -gt 0) {
+            $sizeMb = [math]::Round($size / 1MB, 1)
+            Write-Host "Используется кешированная версия $DisplayName ($sizeMb MB)" -ForegroundColor DarkGreen
+            Write-PtLog "Cache hit: $DisplayName ($size bytes)"
+            return
+        }
+        Remove-Item -LiteralPath $Destination -Force -ErrorAction SilentlyContinue
+    }
+
+    Invoke-DownloadWithProgress -Url $Url -Destination $Destination -DisplayName $DisplayName
+}
+
+# --- Установленные программы (для отметки в меню) -------------------------
+
+$script:installedNamesCache = $null
+
+function Get-InstalledProgramNames {
+    if ($null -ne $script:installedNamesCache) { return $script:installedNamesCache }
+
+    $paths = @(
+        'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*',
+        'HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*',
+        'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*'
+    )
+
+    $names = Get-ItemProperty -Path $paths -ErrorAction SilentlyContinue |
+        Where-Object { $_.DisplayName } |
+        Select-Object -ExpandProperty DisplayName -Unique
+
+    $script:installedNamesCache = @($names)
+    return $script:installedNamesCache
+}
+
+function Test-IsProgramInstalled {
+    param([Parameter(Mandatory)] [string]$ProgramName)
+
+    # Извлекаем «базовое» имя — отрезаем версию и пометки в скобках.
+    $base = ($ProgramName -replace '\s*\([^)]*\)\s*', ' ').Trim()
+    if ([string]::IsNullOrWhiteSpace($base)) { return $false }
+
+    foreach ($name in (Get-InstalledProgramNames)) {
+        if ($name -like "*$base*") { return $true }
+    }
+    return $false
+}
+
+# --- Winget --------------------------------------------------------------
+
+$script:wingetAvailable = $null
+
+function Test-WingetAvailable {
+    if ($null -ne $script:wingetAvailable) { return $script:wingetAvailable }
+    $script:wingetAvailable = $null -ne (Get-Command winget -ErrorAction SilentlyContinue)
+    return $script:wingetAvailable
+}
+
+function Install-WithWinget {
+    param([Parameter(Mandatory)] [string]$WingetId, [Parameter(Mandatory)] [string]$DisplayName)
+
+    Write-Host "Установка $DisplayName через winget ($WingetId)..." -ForegroundColor Cyan
+    Write-PtLog "Winget install: $WingetId"
+
+    $proc = Start-Process -FilePath 'winget' -ArgumentList @(
+        'install', '--id', $WingetId,
+        '--silent',
+        '--accept-source-agreements',
+        '--accept-package-agreements',
+        '--disable-interactivity'
+    ) -Wait -PassThru -NoNewWindow
+
+    if ($proc.ExitCode -eq 0) {
+        Write-PtLog "Winget success: $DisplayName"
+        return $true
+    }
+    Write-PtLog "Winget failed (exit $($proc.ExitCode)): $DisplayName" 'WARN'
+    return $false
+}
+
+# --- Проверка прав администратора ------------------------------------------
 
 if (-not (Test-IsAdmin)) {
     Write-Host 'Скрипт требует запуска от имени администратора.' -ForegroundColor Red
@@ -90,7 +253,9 @@ if (-not (Test-IsAdmin)) {
     }
 }
 
-# --- Приветствие ------------------------------------------------------------
+Write-PtLog '=== Session start ==='
+
+# --- Приветствие ----------------------------------------------------------
 
 Clear-Host
 $windowWidth  = [console]::WindowWidth
@@ -133,30 +298,25 @@ $padding = ' ' * [math]::Max(0, [math]::Floor(($windowWidth - $signature.Length)
 Start-Sleep -Seconds 3
 Clear-Host
 
-# --- 7-Zip ------------------------------------------------------------------
+# --- 7-Zip -----------------------------------------------------------------
 
 $sevenZipPath = Get-SevenZipPath
 if (-not $sevenZipPath) {
     Write-Host '7-Zip не найден. Он рекомендуется для установки программ из архивов.' -ForegroundColor Yellow
     if (Read-YesNo 'Хотите установить 7-Zip?') {
-        try {
-            $sevenZipPath = Install-SevenZip
-        } catch {
+        try { $sevenZipPath = Install-SevenZip }
+        catch {
             Write-Host "Ошибка установки 7-Zip: $_" -ForegroundColor Red
             Read-Host 'Нажмите Enter для выхода'
             Exit
         }
     } else {
         Write-Host 'Установка 7-Zip пропущена. Программы типа archive не сработают.' -ForegroundColor Yellow
-        if (-not (Read-YesNo 'Продолжить без 7-Zip?')) {
-            Exit
-        }
+        if (-not (Read-YesNo 'Продолжить без 7-Zip?')) { Exit }
     }
 }
 
-# --- Список программ -------------------------------------------------------
-# Список загружается из programs.json рядом со скриптом на сервере.
-# Чтобы добавить/обновить программу — правь programs.json, не этот файл.
+# --- Список программ ------------------------------------------------------
 
 $programsUrl = 'https://powertoy.erney.monster/programs.json'
 
@@ -166,6 +326,7 @@ try {
 } catch {
     Write-Host "Не удалось загрузить список программ с $programsUrl" -ForegroundColor Red
     Write-Host "Ошибка: $_" -ForegroundColor Red
+    Write-PtLog "Failed to fetch programs.json: $_" 'ERROR'
     Read-Host 'Нажмите Enter для выхода'
     Exit
 }
@@ -176,20 +337,13 @@ if (-not $programs -or $programs.Count -eq 0) {
     Exit
 }
 
-# --- Установка -------------------------------------------------------------
+Write-PtLog "Loaded $($programs.Count) programs from JSON"
+
+# --- Установка ------------------------------------------------------------
 
 $downloadPath = Join-Path $env:TEMP 'Installers'
 if (-not (Test-Path -LiteralPath $downloadPath)) {
     New-Item -ItemType Directory -Path $downloadPath | Out-Null
-}
-
-function Show-Menu {
-    Clear-Host
-    Write-Host 'Выберите программу для установки (для archive нужен 7-Zip) или q/й для выхода:' -ForegroundColor Green
-    for ($i = 0; $i -lt $programs.Count; $i++) {
-        Write-Host "[$($i + 1)] $($programs[$i].Name)"
-    }
-    Write-Host '[q] Выход' -ForegroundColor Green
 }
 
 function Expand-NestedArchive {
@@ -198,9 +352,7 @@ function Expand-NestedArchive {
         [Parameter(Mandatory)] [string]$ExtractPath
     )
 
-    if (-not $sevenZipPath) {
-        throw '7-Zip не установлен — распаковка архива невозможна.'
-    }
+    if (-not $sevenZipPath) { throw '7-Zip не установлен — распаковка архива невозможна.' }
 
     Write-Host "Разархивирование $ArchivePath..." -ForegroundColor Cyan
     Start-Process -FilePath $sevenZipPath `
@@ -221,9 +373,7 @@ function Install-IsoProgram {
     param([Parameter(Mandatory)] $Program)
 
     $isoPath = Join-Path $downloadPath $Program.Installer
-
-    Write-Host "Скачивание ISO-образа $($Program.Name)..." -ForegroundColor Cyan
-    Start-BitsTransfer -Source $Program.Url -Destination $isoPath
+    Get-CachedOrDownload -Url $Program.Url -Destination $isoPath -DisplayName "ISO $($Program.Name)"
 
     if ($Program.LicenseKey) {
         Set-Clipboard -Value $Program.LicenseKey
@@ -250,9 +400,7 @@ function Install-ScriptProgram {
     param([Parameter(Mandatory)] $Program)
 
     $scriptPath = Join-Path $downloadPath $Program.Installer
-
-    Write-Host "Скачивание скрипта $($Program.Name)..." -ForegroundColor Cyan
-    Start-BitsTransfer -Source $Program.Url -Destination $scriptPath
+    Get-CachedOrDownload -Url $Program.Url -Destination $scriptPath -DisplayName "скрипт $($Program.Name)"
 
     Write-Host "Выполнение скрипта $($Program.Name)..." -ForegroundColor Cyan
     & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $scriptPath
@@ -269,7 +417,18 @@ function Install-SelectedProgram {
     }
     $program = $programs[$Index - 1]
 
+    Write-PtLog "Install start: [$Index] $($program.Name)"
+
     try {
+        # Сначала пробуем winget, если поле задано и winget доступен
+        if ($program.WingetId -and (Test-WingetAvailable)) {
+            if (Install-WithWinget -WingetId $program.WingetId -DisplayName $program.Name) {
+                Write-Host "$($program.Name) установлен через winget." -ForegroundColor Green
+                return
+            }
+            Write-Host 'Winget не сработал, пробую прямую установку...' -ForegroundColor Yellow
+        }
+
         switch ($program.Type) {
             'ISO'    { Install-IsoProgram    -Program $program; return }
             'Script' { Install-ScriptProgram -Program $program; return }
@@ -279,8 +438,7 @@ function Install-SelectedProgram {
         $downloadFile = Join-Path $downloadPath $downloadName
         $extractPath  = Join-Path $downloadPath ($program.Name -replace ' ', '_')
 
-        Write-Host "Скачивание $($program.Name)..." -ForegroundColor Cyan
-        Start-BitsTransfer -Source $program.Url -Destination $downloadFile
+        Get-CachedOrDownload -Url $program.Url -Destination $downloadFile -DisplayName $program.Name
 
         if ($program.Zip) {
             if (Test-Path -LiteralPath $extractPath) {
@@ -314,37 +472,147 @@ function Install-SelectedProgram {
         }
 
         Write-Host "$($program.Name) успешно установлен." -ForegroundColor Green
+        Write-PtLog "Install done: $($program.Name)"
     } catch {
         Write-Host "Ошибка при установке $($program.Name): $_" -ForegroundColor Red
+        Write-PtLog "Install failed: $($program.Name) — $_" 'ERROR'
     }
+}
+
+# --- Меню ------------------------------------------------------------------
+
+function Get-FilteredIndices {
+    param([string]$Filter)
+
+    if ([string]::IsNullOrWhiteSpace($Filter)) {
+        return @(1..$programs.Count)
+    }
+
+    $result = @()
+    for ($i = 0; $i -lt $programs.Count; $i++) {
+        if ($programs[$i].Name -like "*$Filter*") { $result += ($i + 1) }
+    }
+    return $result
+}
+
+function Show-Menu {
+    param([string]$Filter = '')
+
+    Clear-Host
+
+    if ($Filter) {
+        Write-Host "Поиск: '$Filter'  (введите / чтобы сбросить)" -ForegroundColor Yellow
+        Write-Host
+    }
+
+    $visible = Get-FilteredIndices -Filter $Filter
+
+    if ($visible.Count -eq 0) {
+        Write-Host 'Ничего не найдено.' -ForegroundColor Yellow
+        Write-Host
+        return
+    }
+
+    # Группируем по Category, сохраняя порядок появления категории в списке
+    $groups = [ordered]@{}
+    foreach ($idx in $visible) {
+        $cat = $programs[$idx - 1].Category
+        if (-not $cat) { $cat = 'Прочее' }
+        if (-not $groups.Contains($cat)) { $groups[$cat] = @() }
+        $groups[$cat] += $idx
+    }
+
+    foreach ($cat in $groups.Keys) {
+        Write-Host "── $cat ──" -ForegroundColor Cyan
+        foreach ($idx in $groups[$cat]) {
+            $p = $programs[$idx - 1]
+            $num = "[$idx]".PadLeft(5)
+            $installed = Test-IsProgramInstalled -ProgramName $p.Name
+            if ($installed) {
+                Write-Host ("  {0}  {1}" -f $num, $p.Name) -NoNewline
+                Write-Host '  ✓' -ForegroundColor Green
+            } else {
+                Write-Host ("  {0}  {1}" -f $num, $p.Name)
+            }
+        }
+        Write-Host
+    }
+}
+
+function Show-Hints {
+    Write-Host '─────────────────────────────────────────────' -ForegroundColor DarkGray
+    Write-Host '  Введите номер(а) через пробел: 1 5 17       ' -ForegroundColor DarkGray
+    Write-Host '  Поиск: /текст     Сброс поиска: /           ' -ForegroundColor DarkGray
+    Write-Host '  Выход: q                                    ' -ForegroundColor DarkGray
+    Write-Host '─────────────────────────────────────────────' -ForegroundColor DarkGray
 }
 
 # --- Основной цикл ---------------------------------------------------------
 
-try {
-    do {
-        Show-Menu
-        $choice = Read-Host 'Введите номер программы или q/й для выхода'
+$filter = ''
 
-        if ($choice -match '^(q|й)$') {
+try {
+    while ($true) {
+        Show-Menu -Filter $filter
+        Show-Hints
+        $userInput = Read-Host 'Ваш выбор'
+        $userInput = $userInput.Trim()
+
+        if ([string]::IsNullOrWhiteSpace($userInput)) { continue }
+
+        if ($userInput -match '^(q|й)$') {
             Write-Host 'Выход из программы.' -ForegroundColor Green
             break
         }
 
-        $selectedIndex = 0
-        if ([int]::TryParse($choice, [ref]$selectedIndex) -and
-            $selectedIndex -ge 1 -and $selectedIndex -le $programs.Count) {
-            Install-SelectedProgram -Index $selectedIndex
-        } else {
-            Write-Host "Неверный выбор: $choice" -ForegroundColor Red
+        if ($userInput.StartsWith('/')) {
+            $filter = $userInput.Substring(1).Trim()
+            if ($filter) { Write-PtLog "Search filter set: '$filter'" }
+            else         { Write-PtLog 'Search filter cleared' }
+            continue
         }
 
+        # Парсинг множественного выбора через пробел
+        $indices = @()
+        $bad = $null
+        foreach ($token in ($userInput -split '\s+')) {
+            if ([string]::IsNullOrWhiteSpace($token)) { continue }
+            $n = 0
+            if ([int]::TryParse($token, [ref]$n) -and $n -ge 1 -and $n -le $programs.Count) {
+                if ($indices -notcontains $n) { $indices += $n }
+            } else {
+                $bad = $token
+                break
+            }
+        }
+
+        if ($bad) {
+            Write-Host "Неверный пункт: $bad" -ForegroundColor Red
+            Read-Host 'Нажмите Enter'
+            continue
+        }
+        if ($indices.Count -eq 0) { continue }
+
+        if ($indices.Count -gt 1) {
+            Write-Host "Будут установлены $($indices.Count) программ(ы)." -ForegroundColor Cyan
+        }
+
+        foreach ($idx in $indices) {
+            Install-SelectedProgram -Index $idx
+            Write-Host
+        }
+
+        # Сбрасываем кеш установленных, чтобы при возврате в меню обновились ✓
+        $script:installedNamesCache = $null
+
         Read-Host 'Нажмите Enter для возврата в меню'
-    } while ($true)
+    }
 }
 finally {
     if (Test-Path -LiteralPath $downloadPath) {
         Remove-Item -LiteralPath $downloadPath -Recurse -Force -ErrorAction SilentlyContinue
     }
+    Write-PtLog '=== Session end ==='
     Write-Host 'Все выбранные программы установлены.' -ForegroundColor Green
+    Write-Host "Лог сессии: $logPath" -ForegroundColor DarkGray
 }
