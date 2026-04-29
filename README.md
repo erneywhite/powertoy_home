@@ -81,9 +81,8 @@ irm https://raw.githubusercontent.com/erneywhite/powertoy_home/refs/heads/main/p
 
 | # | Программа | Тип | Источник |
 |---|---------|------|--------|
-| 5 | Notepad++ (8.9.1) | .exe | github.com |
-| 8 | Discord (latest) | .exe | discordapp.net |
-| 13 | Telegram (6.4.2) | .exe | td.telegram.org |
+| 8 | Discord (latest) | .exe | discord.com |
+| 14 | Telegram (6.4.2) | .exe | td.telegram.org |
 
 ### Игры и гейминг
 
@@ -114,6 +113,7 @@ irm https://raw.githubusercontent.com/erneywhite/powertoy_home/refs/heads/main/p
 
 | # | Программа | Тип | Источник |
 |---|---------|------|--------|
+| 5 | Notepad++ (8.9.1) | .exe | github.com |
 | 12 | Windhawk (1.7.3) | .exe | github.com |
 | 22 | MiniBin (6.6.0.0) | .exe | powertoy.erney.monster |
 
@@ -141,45 +141,52 @@ irm https://raw.githubusercontent.com/erneywhite/powertoy_home/refs/heads/main/p
 
 ```
 powertoy_home/
-├── powertoy.ps1   # Основной PowerShell-скрипт установщика
-├── powertoy.php   # Веб-страница / редирект для powertoy.erney.monster
-├── favicon.ico    # Иконка сайта
+├── powertoy.ps1    # Основной PowerShell-скрипт установщика (логика)
+├── programs.json   # Список программ (URL, аргументы установки)
+├── powertoy.php    # Отдаёт powertoy.ps1 для PowerShell или HTML-превью для браузера
+├── favicon.ico     # Иконка сайта
 └── .gitignore
 ```
 
-`powertoy.php` отдаёт содержимое `powertoy.ps1` при запросе от PowerShell (`irm`) или отображает HTML-страницу в браузере.
+`powertoy.php` читает `powertoy.ps1` с диска и отдаёт его сырьём при запросе от PowerShell (`irm`) или подсвеченным превью в браузере.
+
+`powertoy.ps1` при запуске загружает `programs.json` с сервера через `Invoke-RestMethod` — добавление/обновление программ не требует правки самого скрипта.
 
 ---
 
 ## Добавление программы
 
-Добавьте запись в массив `$programs` в `powertoy.ps1`:
+Добавьте объект в массив в `programs.json`:
 
 **Обычный .exe / .msi:**
-```powershell
-@{
-    Name      = "MyApp (1.0.0)"
-    Url       = "https://example.com/myapp-setup.exe"
-    Args      = "/S"
-    Installer = "myapp-setup.exe"
-},
+```json
+{
+    "Name": "MyApp (1.0.0)",
+    "Url": "https://example.com/myapp-setup.exe",
+    "Args": "/S",
+    "Installer": "myapp-setup.exe"
+}
 ```
 
 **Файл в архиве (archive)** — необходим 7-Zip:
-```powershell
-@{
-    Name      = "MyApp (archive)"
-    Url       = "https://example.com/myapp.zip"
-    Args      = "/quiet"
-    Installer = "setup.msi"        # имя файла внутри архива
-    Zip       = "myapp.zip"        # обязательное поле для archive-типа
-},
+```json
+{
+    "Name": "MyApp (archive)",
+    "Url": "https://example.com/myapp.zip",
+    "Args": "/quiet",
+    "Installer": "setup.msi",
+    "Zip": "myapp.zip"
+}
 ```
 
-Параметр `Args` для тихой установки:
-- `.exe` — обычно `/S` или `/silent`
-- `.msi` — обычно `/quiet /norestart`
-- если пустая строка `""` — скрипт запустит установщик без аргументов (графический мастер)
+Поля:
+- `Name` — отображается в меню.
+- `Url` — прямая ссылка на установщик (или ZIP).
+- `Args` — аргументы тихой установки. Для `.exe` обычно `/S` или `/silent`, для `.msi` — `/quiet /norestart`. Пустая строка `""` запустит установщик без аргументов (графический мастер).
+- `Installer` — имя файла, под которым установщик будет сохранён в `%TEMP%\Installers`. Для archive-типа — имя установочного файла **внутри** архива (`*.exe` или `*.msi`).
+- `Zip` (опционально) — имя ZIP-файла, под которым он будет сохранён локально перед распаковкой. Указание этого поля переключает программу в режим archive.
+
+После правки `programs.json` достаточно загрузить новую версию на сервер — изменения подхватятся при следующем запуске `irm https://powertoy.erney.monster | iex` без правки самого скрипта.
 
 ---
 
