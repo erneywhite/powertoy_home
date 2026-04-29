@@ -60,6 +60,41 @@ function Write-CenteredMessage {
     [console]::ForegroundColor = $origFg
 }
 
+function Resize-ConsoleWindow {
+    # Подгоняем окно консоли под размер меню, чтобы не прокручивать.
+    # 9 категорий + 31 программа + подсказки ≈ 60 строк.
+    param(
+        [int]$MinHeight = 60,
+        [int]$MinWidth  = 100
+    )
+
+    try {
+        $ui = (Get-Host).UI.RawUI
+        if (-not $ui) { return }
+
+        $maxSize = $ui.MaxWindowSize
+        if (-not $maxSize) { return }
+
+        $targetHeight = [math]::Min($MinHeight, [int]$maxSize.Height)
+        $targetWidth  = [math]::Min($MinWidth,  [int]$maxSize.Width)
+
+        # BufferSize должен быть >= WindowSize по обоим измерениям.
+        $buffer = $ui.BufferSize
+        $bufferChanged = $false
+        if ($buffer.Width  -lt $targetWidth)          { $buffer.Width  = $targetWidth;       $bufferChanged = $true }
+        if ($buffer.Height -lt ($targetHeight + 200)) { $buffer.Height = $targetHeight + 200; $bufferChanged = $true }
+        if ($bufferChanged) { $ui.BufferSize = $buffer }
+
+        $window = $ui.WindowSize
+        $windowChanged = $false
+        if ($window.Width  -lt $targetWidth)  { $window.Width  = $targetWidth;  $windowChanged = $true }
+        if ($window.Height -lt $targetHeight) { $window.Height = $targetHeight; $windowChanged = $true }
+        if ($windowChanged) { $ui.WindowSize = $window }
+    } catch {
+        # ISE/VSCode/Windows Terminal могут не позволять — игнорируем.
+    }
+}
+
 function Get-SevenZipPath {
     $candidates = @(
         Join-Path $env:ProgramFiles      '7-Zip\7z.exe'
@@ -255,6 +290,9 @@ if (-not (Test-IsAdmin)) {
 
 Write-PtLog '=== Session start ==='
 
+# Расширяем окно консоли, чтобы меню помещалось без прокрутки.
+Resize-ConsoleWindow -MinHeight 60 -MinWidth 100
+
 # --- Приветствие ----------------------------------------------------------
 
 Clear-Host
@@ -322,7 +360,17 @@ $programsUrl = 'https://powertoy.erney.monster/programs.json'
 
 try {
     Write-Host 'Загрузка списка программ...' -ForegroundColor Cyan
-    $programs = Invoke-RestMethod -Uri $programsUrl -UseBasicParsing
+    # Грузим сырыми байтами и руками декодируем как UTF-8 — иначе PS 5.1
+    # без charset в Content-Type использует ISO-8859-1 и ломает кириллицу.
+    $resp  = Invoke-WebRequest -Uri $programsUrl -UseBasicParsing
+    $bytes = $resp.RawContentStream.ToArray()
+    # Срезаем UTF-8 BOM, если он есть, чтобы ConvertFrom-Json в PS 5.1 не споткнулся.
+    if ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) {
+        $jsonText = [System.Text.Encoding]::UTF8.GetString($bytes, 3, $bytes.Length - 3)
+    } else {
+        $jsonText = [System.Text.Encoding]::UTF8.GetString($bytes)
+    }
+    $programs = $jsonText | ConvertFrom-Json
 } catch {
     Write-Host "Не удалось загрузить список программ с $programsUrl" -ForegroundColor Red
     Write-Host "Ошибка: $_" -ForegroundColor Red
