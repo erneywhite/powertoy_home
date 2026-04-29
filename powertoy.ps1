@@ -217,6 +217,49 @@ function Expand-NestedArchive {
     }
 }
 
+function Install-IsoProgram {
+    param([Parameter(Mandatory)] $Program)
+
+    $isoPath = Join-Path $downloadPath $Program.Installer
+
+    Write-Host "Скачивание ISO-образа $($Program.Name)..." -ForegroundColor Cyan
+    Start-BitsTransfer -Source $Program.Url -Destination $isoPath
+
+    if ($Program.LicenseKey) {
+        Set-Clipboard -Value $Program.LicenseKey
+        Write-Host 'Лицензионный ключ скопирован в буфер обмена.' -ForegroundColor Green
+    }
+
+    Write-Host 'Монтирование ISO-образа...' -ForegroundColor Cyan
+    $mount = Mount-DiskImage -ImagePath $isoPath -PassThru
+    $driveLetter = ($mount | Get-Volume).DriveLetter
+    if ($driveLetter) {
+        Write-Host "ISO-образ смонтирован на диске ${driveLetter}:" -ForegroundColor Green
+    } else {
+        Write-Host 'ISO-образ смонтирован (буква диска не определена).' -ForegroundColor Yellow
+    }
+
+    Read-Host 'Нажмите Enter для размонтирования ISO-образа'
+
+    Write-Host 'Размонтирование ISO-образа...' -ForegroundColor Cyan
+    Dismount-DiskImage -ImagePath $isoPath | Out-Null
+    Write-Host 'ISO-образ размонтирован.' -ForegroundColor Green
+}
+
+function Install-ScriptProgram {
+    param([Parameter(Mandatory)] $Program)
+
+    $scriptPath = Join-Path $downloadPath $Program.Installer
+
+    Write-Host "Скачивание скрипта $($Program.Name)..." -ForegroundColor Cyan
+    Start-BitsTransfer -Source $Program.Url -Destination $scriptPath
+
+    Write-Host "Выполнение скрипта $($Program.Name)..." -ForegroundColor Cyan
+    & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $scriptPath
+
+    Write-Host "$($Program.Name) выполнен." -ForegroundColor Green
+}
+
 function Install-SelectedProgram {
     param([Parameter(Mandatory)] [int]$Index)
 
@@ -227,6 +270,11 @@ function Install-SelectedProgram {
     $program = $programs[$Index - 1]
 
     try {
+        switch ($program.Type) {
+            'ISO'    { Install-IsoProgram    -Program $program; return }
+            'Script' { Install-ScriptProgram -Program $program; return }
+        }
+
         $downloadName = if ($program.Zip) { $program.Zip } else { $program.Installer }
         $downloadFile = Join-Path $downloadPath $downloadName
         $extractPath  = Join-Path $downloadPath ($program.Name -replace ' ', '_')
