@@ -104,8 +104,8 @@ function Get-SevenZipPath {
 }
 
 function Install-SevenZip {
-    $url = 'https://www.7-zip.org/a/7z2409-x64.exe'
-    $tmp = Join-Path $env:TEMP '7z2409-x64.exe'
+    $url = 'https://www.7-zip.org/a/7z2601-x64.exe'
+    $tmp = Join-Path $env:TEMP '7z2601-x64.exe'
 
     Write-Host 'Скачивание установщика 7-Zip...' -ForegroundColor Cyan
     Start-BitsTransfer -Source $url -Destination $tmp -ErrorAction Stop

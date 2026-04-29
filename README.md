@@ -75,18 +75,18 @@ irm https://raw.githubusercontent.com/erneywhite/powertoy_home/refs/heads/main/p
 
 | # | Программа | Тип | Источник |
 |---|---------|------|--------|
-| 1 | 7-Zip (24.09) | .exe | 7-zip.org |
+| 1 | 7-Zip (26.01) | .exe | 7-zip.org |
 | 2 | WinRAR (7.00) | .exe | powertoy.erney.monster |
-| 28 | LibreOffice (25.8.4) | .msi | ftp.byfly.by |
+| 28 | LibreOffice (26.2.2) | .msi | documentfoundation.org |
 | 29 | HiBitUninstaller (4.0.10) | .exe | powertoy.erney.monster |
-| 30 | WinDirStat (2.2.2) | .msi | github.com |
+| 30 | WinDirStat (2.5.0) | .msi | github.com |
 | 31 | Paragon HDM Ru (17.20.9) | archive | powertoy.erney.monster |
 
 ### Браузеры
 
 | # | Программа | Тип | Источник |
 |---|---------|------|--------|
-| 3 | Firefox (147.0.2) | .msi | mozilla.net |
+| 3 | Firefox (150.0.1) | .msi | mozilla.net |
 | 4 | Google Chrome (latest) | .exe | powertoy.erney.monster |
 
 ### Мессенджеры и соцсети
@@ -94,14 +94,14 @@ irm https://raw.githubusercontent.com/erneywhite/powertoy_home/refs/heads/main/p
 | # | Программа | Тип | Источник |
 |---|---------|------|--------|
 | 8 | Discord (latest) | .exe | discord.com |
-| 14 | Telegram (6.4.2) | .exe | td.telegram.org |
+| 14 | Telegram (6.7.8) | .exe | td.telegram.org |
 
 ### Игры и гейминг
 
 | # | Программа | Тип | Источник |
 |---|---------|------|--------|
 | 6 | Steam (latest) | .exe | steamstatic.com |
-| 7 | Epic Games Store (19.1.5) | .msi | epicgames |
+| 7 | Epic Games Store (19.2.3) | .msi | epicgames |
 | 17 | CurseForge (latest) | .exe | overwolf.com |
 | 18 | WeMod (latest) | .exe | wemod.com |
 | 19 | WeMod PRO Unlocker | .exe | powertoy.erney.monster |
@@ -112,7 +112,7 @@ irm https://raw.githubusercontent.com/erneywhite/powertoy_home/refs/heads/main/p
 
 | # | Программа | Тип | Источник |
 |---|---------|------|--------|
-| 9 | AmneziaVPN (4.8.12.9) | .exe | github.com |
+| 9 | AmneziaVPN (4.8.14.5) | .exe | github.com |
 | 11 | 1Password (latest) | .exe | 1password.com |
 
 ### Музыка и медиа
@@ -125,7 +125,7 @@ irm https://raw.githubusercontent.com/erneywhite/powertoy_home/refs/heads/main/p
 
 | # | Программа | Тип | Источник |
 |---|---------|------|--------|
-| 5 | Notepad++ (8.9.1) | .exe | github.com |
+| 5 | Notepad++ (8.9.4) | .exe | github.com |
 | 12 | Windhawk (1.7.3) | .exe | github.com |
 | 22 | MiniBin (6.6.0.0) | .exe | powertoy.erney.monster |
 
@@ -133,14 +133,14 @@ irm https://raw.githubusercontent.com/erneywhite/powertoy_home/refs/heads/main/p
 
 | # | Программа | Тип | Источник |
 |---|---------|------|--------|
-| 13 | qBittorrent (5.0.4) | .exe | sourceforge.net |
-| 16 | Synology Drive Client (4.0.1) | .exe | synologydownload.com |
+| 13 | qBittorrent (5.1.4) | .exe | sourceforge.net |
+| 16 | Synology Drive Client (4.0.2) | .exe | synologydownload.com |
 
 ### Драйверы и периферия
 
 | # | Программа | Тип | Источник |
 |---|---------|------|--------|
-| 15 | NVIDIA App (11.0.6.383) | .exe | nvidia.com |
+| 15 | NVIDIA App (11.0.7.247) | .exe | nvidia.com |
 | 23 | ID-COOLING (1.0.5) | .msi | powertoy.erney.monster |
 | 24 | Z-SYNC (archive 1.0.19) | .zip | powertoy.erney.monster |
 | 25 | Stream Dock (latest) | .exe | powertoy.erney.monster |

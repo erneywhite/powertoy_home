@@ -1,10 +1,10 @@
 [
     {
-        "Name": "7-Zip (24.09)",
+        "Name": "7-Zip (26.01)",
         "Category": "Архиваторы и утилиты",
-        "Url": "https://www.7-zip.org/a/7z2409-x64.exe",
+        "Url": "https://www.7-zip.org/a/7z2601-x64.exe",
         "Args": "/S",
-        "Installer": "7z2409-x64.exe"
+        "Installer": "7z2601-x64.exe"
     },
     {
         "Name": "WinRAR (7.00)",
@@ -14,11 +14,11 @@
         "Installer": "WinRAR.v7.00.exe"
     },
     {
-        "Name": "Firefox (147.0.2)",
+        "Name": "Firefox (150.0.1)",
         "Category": "Браузеры",
-        "Url": "https://download-installer.cdn.mozilla.net/pub/firefox/releases/147.0.2/win64/ru/Firefox%20Setup%20147.0.2.msi",
+        "Url": "https://download-installer.cdn.mozilla.net/pub/firefox/releases/150.0.1/win64/ru/Firefox%20Setup%20150.0.1.msi",
         "Args": "/quiet /norestart",
-        "Installer": "Firefox Setup 147.0.2.msi"
+        "Installer": "Firefox Setup 150.0.1.msi"
     },
     {
         "Name": "Google Chrome (latest)",
@@ -28,11 +28,11 @@
         "Installer": "ChromeSetup.exe"
     },
     {
-        "Name": "Notepad++ (8.9.1)",
+        "Name": "Notepad++ (8.9.4)",
         "Category": "Системные утилиты",
-        "Url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.1/npp.8.9.1.Installer.exe",
+        "Url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.4/npp.8.9.4.Installer.exe",
         "Args": "/S",
-        "Installer": "npp.8.9.1.Installer.exe"
+        "Installer": "npp.8.9.4.Installer.exe"
     },
     {
         "Name": "Steam (latest)",
@@ -42,11 +42,11 @@
         "Installer": "SteamSetup.exe"
     },
     {
-        "Name": "Epic Games Store (19.1.5)",
+        "Name": "Epic Games Store (19.2.3)",
         "Category": "Игры и гейминг",
-        "Url": "https://epicgames-download1.akamaized.net/Builds/UnrealEngineLauncher/Installers/Windows/EpicInstaller-19.1.5.msi?launcherfilename=EpicInstaller-19.1.5.msi",
+        "Url": "https://epicgames-download1.akamaized.net/Builds/UnrealEngineLauncher/Installers/Windows/EpicInstaller-19.2.3.msi?launcherfilename=EpicInstaller-19.2.3.msi",
         "Args": "/quiet /norestart",
-        "Installer": "EpicInstaller-19.1.5.msi"
+        "Installer": "EpicInstaller-19.2.3.msi"
     },
     {
         "Name": "Discord (latest)",
@@ -56,11 +56,11 @@
         "Installer": "DiscordSetup.exe"
     },
     {
-        "Name": "AmneziaVPN (4.8.12.9)",
+        "Name": "AmneziaVPN (4.8.14.5)",
         "Category": "VPN и безопасность",
-        "Url": "https://github.com/amnezia-vpn/amnezia-client/releases/download/4.8.12.9/AmneziaVPN_4.8.12.9_x64.exe",
+        "Url": "https://github.com/amnezia-vpn/amnezia-client/releases/download/4.8.14.5/AmneziaVPN_4.8.14.5_x64.exe",
         "Args": "/S",
-        "Installer": "AmneziaVPN_4.8.12.9_x64.exe"
+        "Installer": "AmneziaVPN_4.8.14.5_x64.exe"
     },
     {
         "Name": "Spotify (latest)",
@@ -85,32 +85,32 @@
         "Installer": "windhawk_setup.exe"
     },
     {
-        "Name": "qBittorrent (5.0.4)",
+        "Name": "qBittorrent (5.1.4)",
         "Category": "Торрент и облако",
-        "Url": "https://netix.dl.sourceforge.net/project/qbittorrent/qbittorrent-win32/qbittorrent-5.0.4/qbittorrent_5.0.4_x64_setup.exe?viasf=1",
+        "Url": "https://netix.dl.sourceforge.net/project/qbittorrent/qbittorrent-win32/qbittorrent-5.1.4/qbittorrent_5.1.4_x64_setup.exe?viasf=1",
         "Args": "/S",
-        "Installer": "qbittorrent_5.0.4_x64_setup.exe"
+        "Installer": "qbittorrent_5.1.4_x64_setup.exe"
     },
     {
-        "Name": "Telegram (6.4.2)",
+        "Name": "Telegram (6.7.8)",
         "Category": "Мессенджеры и соцсети",
-        "Url": "https://td.telegram.org/tx64/tsetup-x64.6.4.2.exe",
+        "Url": "https://td.telegram.org/tx64/tsetup-x64.6.7.8.exe",
         "Args": "/S",
-        "Installer": "tsetup-x64.6.4.2.exe"
+        "Installer": "tsetup-x64.6.7.8.exe"
     },
     {
-        "Name": "NVIDIA App (11.0.6.383)",
+        "Name": "NVIDIA App (11.0.7.247)",
         "Category": "Драйверы и периферия",
-        "Url": "https://uk.download.nvidia.com/nvapp/client/11.0.6.383/NVIDIA_app_v11.0.6.383.exe",
+        "Url": "https://uk.download.nvidia.com/nvapp/client/11.0.7.247/NVIDIA_app_v11.0.7.247.exe",
         "Args": "/S",
-        "Installer": "NVIDIA_app_v11.0.6.383.exe"
+        "Installer": "NVIDIA_app_v11.0.7.247.exe"
     },
     {
-        "Name": "Synology Drive Client (4.0.1-17885)",
+        "Name": "Synology Drive Client (4.0.2-17889)",
         "Category": "Торрент и облако",
-        "Url": "https://global.synologydownload.com/download/Utility/SynologyDriveClient/4.0.1-17885/Windows/Installer/i686/Synology%20Drive%20Client-4.0.1-17885-x86.exe",
+        "Url": "https://global.synologydownload.com/download/Utility/SynologyDriveClient/4.0.2-17889/Windows/Installer/i686/Synology%20Drive%20Client-4.0.2-17889-x86.exe",
         "Args": "/S",
-        "Installer": "Synology Drive Client-4.0.1-17885-x86.exe"
+        "Installer": "Synology Drive Client-4.0.2-17889-x86.exe"
     },
     {
         "Name": "CurseForge (latest)",
@@ -191,11 +191,11 @@
         "Installer": "RK_Keyboard_Software_Setup_V4.6 20250617.exe"
     },
     {
-        "Name": "LibreOffice (25.8.4)",
+        "Name": "LibreOffice (26.2.2)",
         "Category": "Архиваторы и утилиты",
-        "Url": "https://ftp.byfly.by/pub/tdf/libreoffice/stable/25.8.4/win/x86_64/LibreOffice_25.8.4_Win_x86-64.msi",
+        "Url": "https://download.documentfoundation.org/libreoffice/stable/26.2.2/win/x86_64/LibreOffice_26.2.2_Win_x86-64.msi",
         "Args": "/quiet /norestart",
-        "Installer": "LibreOffice_25.8.4_Win_x86-64.msi"
+        "Installer": "LibreOffice_26.2.2_Win_x86-64.msi"
     },
     {
         "Name": "HiBitUninstaller (4.0.10)",
@@ -205,9 +205,9 @@
         "Installer": "HiBitUninstaller-setup-4.0.10.exe"
     },
     {
-        "Name": "WinDirStat (2.2.2)",
+        "Name": "WinDirStat (2.5.0)",
         "Category": "Архиваторы и утилиты",
-        "Url": "https://github.com/windirstat/windirstat/releases/download/release/v2.2.2/WinDirStat-x64.msi",
+        "Url": "https://github.com/windirstat/windirstat/releases/download/release/v2.5.0/WinDirStat-x64.msi",
         "Args": "/quiet /norestart",
         "Installer": "WinDirStat-x64.msi"
     },
