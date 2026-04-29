@@ -74,7 +74,8 @@
         "Category": "VPN и безопасность",
         "Url": "https://downloads.1password.com/win/1PasswordSetup-latest.exe",
         "Args": "",
-        "Installer": "1PasswordSetup-latest.exe"
+        "Installer": "1PasswordSetup-latest.exe",
+        "DetectNames": ["1Password", "OnePassword", "AgileBits"]
     },
     {
         "Name": "Windhawk (1.7.3)",

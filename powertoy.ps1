@@ -213,29 +213,53 @@ $script:installedNamesCache = $null
 function Get-InstalledProgramNames {
     if ($null -ne $script:installedNamesCache) { return $script:installedNamesCache }
 
+    $set = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
+
+    # 1. Реестр Uninstall (HKLM, HKLM\WOW6432Node, HKCU, HKCU\WOW6432Node)
     $paths = @(
         'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*',
         'HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*',
-        'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*'
+        'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*',
+        'HKCU:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*'
     )
+    Get-ItemProperty -Path $paths -ErrorAction SilentlyContinue | ForEach-Object {
+        if ($_.DisplayName)  { [void]$set.Add($_.DisplayName) }
+        # Имя ключа реестра тоже бывает информативным (например "1Password" или GUID)
+        if ($_.PSChildName)  { [void]$set.Add($_.PSChildName) }
+    }
 
-    $names = Get-ItemProperty -Path $paths -ErrorAction SilentlyContinue |
-        Where-Object { $_.DisplayName } |
-        Select-Object -ExpandProperty DisplayName -Unique
+    # 2. AppX-пакеты (Microsoft Store / Modern apps — например 1Password 8 ставится как AppX)
+    try {
+        Get-AppxPackage -ErrorAction SilentlyContinue | ForEach-Object {
+            if ($_.Name)              { [void]$set.Add($_.Name) }
+            if ($_.PackageFamilyName) { [void]$set.Add($_.PackageFamilyName) }
+        }
+    } catch {}
 
-    $script:installedNamesCache = @($names)
+    $script:installedNamesCache = @($set)
     return $script:installedNamesCache
 }
 
 function Test-IsProgramInstalled {
-    param([Parameter(Mandatory)] [string]$ProgramName)
+    param([Parameter(Mandatory)] $Program)
 
-    # Извлекаем «базовое» имя — отрезаем версию и пометки в скобках.
-    $base = ($ProgramName -replace '\s*\([^)]*\)\s*', ' ').Trim()
-    if ([string]::IsNullOrWhiteSpace($base)) { return $false }
+    # Базовое имя — отрезаем версию и пометки в скобках.
+    $base = ($Program.Name -replace '\s*\([^)]*\)\s*', ' ').Trim()
+
+    # Подстроки для поиска: базовое имя + пользовательские DetectNames из JSON
+    $needles = New-Object System.Collections.Generic.List[string]
+    if ($base) { $needles.Add($base) }
+    if ($Program.DetectNames) {
+        foreach ($n in $Program.DetectNames) {
+            if ($n) { $needles.Add($n) }
+        }
+    }
+    if ($needles.Count -eq 0) { return $false }
 
     foreach ($name in (Get-InstalledProgramNames)) {
-        if ($name -like "*$base*") { return $true }
+        foreach ($needle in $needles) {
+            if ($name -like "*$needle*") { return $true }
+        }
     }
     return $false
 }
@@ -575,7 +599,7 @@ function Show-Menu {
         foreach ($idx in $groups[$cat]) {
             $p = $programs[$idx - 1]
             $num = "[$idx]".PadLeft(5)
-            $installed = Test-IsProgramInstalled -ProgramName $p.Name
+            $installed = Test-IsProgramInstalled -Program $p
             if ($installed) {
                 Write-Host ("  {0}  {1}" -f $num, $p.Name) -NoNewline
                 Write-Host '  ✓' -ForegroundColor Green
