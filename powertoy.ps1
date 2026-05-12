@@ -124,20 +124,26 @@ function Install-SevenZip {
 # --- Прогресс-бар скачивания -----------------------------------------------
 
 function Write-DownloadProgress {
-    param([Parameter(Mandatory)] [long]$Received, [Parameter(Mandatory)] [long]$Total)
+    # Параметры без типизации: BITS отдаёт BytesTotal как [uint64] и когда
+    # размер неизвестен — возвращает [uint64]::MaxValue (18446744073709551615),
+    # что в Int64 не лезет. Работаем через [double].
+    param([Parameter(Mandatory)] $Received, [Parameter(Mandatory)] $Total)
 
     $width = [Console]::WindowWidth - 1
+    $rD = [double]$Received
+    $tD = [double]$Total
+    # BITS-сентинел «размер неизвестен» или невалидное значение
+    $totalKnown = ($tD -gt 0) -and ($tD -lt [double][uint64]::MaxValue)
 
-    if ($Total -le 0) {
-        $receivedMb = [math]::Round($Received / 1MB, 1)
-        $line = "  Скачано: $receivedMb MB"
+    if (-not $totalKnown) {
+        $line = "  Скачано: $([math]::Round($rD / 1MB, 1)) MB"
     } else {
-        $pct = [math]::Min(100, [int](($Received / $Total) * 100))
+        $pct = [math]::Min(100, [int](($rD / $tD) * 100))
         $barWidth = 30
         $filled = [int]([math]::Floor($pct * $barWidth / 100))
         $bar = ('█' * $filled) + ('░' * ($barWidth - $filled))
-        $receivedMb = [math]::Round($Received / 1MB, 1)
-        $totalMb    = [math]::Round($Total / 1MB, 1)
+        $receivedMb = [math]::Round($rD / 1MB, 1)
+        $totalMb    = [math]::Round($tD / 1MB, 1)
         $line = "  [$bar] {0,3}%  {1,5} / {2,5} MB" -f $pct, $receivedMb, $totalMb
     }
 

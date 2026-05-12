@@ -12,6 +12,12 @@ if ($script === false) {
     exit;
 }
 
+// Срезаем UTF-8 BOM, если он есть — иначе irm | iex видит его как первый
+// символ и парсер падает на чём-нибудь вроде "The term '﻿#' is not recognized".
+if (substr($script, 0, 3) === "\xEF\xBB\xBF") {
+    $script = substr($script, 3);
+}
+
 $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
 $isClient = (stripos($userAgent, 'PowerShell') !== false) || (stripos($userAgent, 'curl') !== false);
 
