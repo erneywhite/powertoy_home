@@ -12,7 +12,8 @@
         "Category": "Архиваторы и утилиты",
         "Url": "https://powertoy.erney.monster/packs/WinRAR.v7.00.exe",
         "Args": "/S /IRU",
-        "Installer": "WinRAR.v7.00.exe"
+        "Installer": "WinRAR.v7.00.exe",
+        "RequiresAdmin": true
     },
     {
         "Name": "Firefox",
@@ -114,7 +115,8 @@
         "Category": "Драйверы и периферия",
         "Url": "https://uk.download.nvidia.com/nvapp/client/11.0.7.247/NVIDIA_app_v11.0.7.247.exe",
         "Args": "/S",
-        "Installer": "NVIDIA_app_v11.0.7.247.exe"
+        "Installer": "NVIDIA_app_v11.0.7.247.exe",
+        "RequiresAdmin": true
     },
     {
         "Name": "Synology Drive Client",
@@ -186,7 +188,8 @@
         "Category": "Драйверы и периферия",
         "Url": "https://powertoy.erney.monster/packs/Stream-Dock-Installer_Windows.exe",
         "Args": "",
-        "Installer": "Stream-Dock-Installer_Windows.exe"
+        "Installer": "Stream-Dock-Installer_Windows.exe",
+        "RequiresAdmin": true
     },
     {
         "Name": "Logitech G HUB (latest)",
@@ -194,14 +197,16 @@
         "Url": "https://download01.logi.com/web/ftp/pub/techsupport/gaming/lghub_installer.exe",
         "Args": "",
         "Installer": "lghub_installer.exe",
-        "WingetId": "Logitech.GHUB"
+        "WingetId": "Logitech.GHUB",
+        "RequiresAdmin": true
     },
     {
         "Name": "RK Keyboard (latest)",
         "Category": "Драйверы и периферия",
         "Url": "https://s3.us-east-1.amazonaws.com/s3.downloadcenter/RK_Keyboard_Software_Setup_V4.6%2020250617.exe",
         "Args": "",
-        "Installer": "RK_Keyboard_Software_Setup_V4.6 20250617.exe"
+        "Installer": "RK_Keyboard_Software_Setup_V4.6 20250617.exe",
+        "RequiresAdmin": true
     },
     {
         "Name": "LibreOffice",

@@ -43,6 +43,20 @@ function Test-IsAdmin {
     )
 }
 
+function Start-Install {
+    # Запускает установщик; если нужен админ, а мы не админ — поднимает права
+    # точечно (отдельный UAC только на этот установщик).
+    param(
+        [Parameter(Mandatory)] [string]$FilePath,
+        [string]$Arguments,
+        [switch]$NeedsAdmin
+    )
+    $sp = @{ FilePath = $FilePath; Wait = $true; PassThru = $true; ErrorAction = 'Stop' }
+    if ($Arguments) { $sp.ArgumentList = $Arguments }
+    if ($NeedsAdmin -and -not $script:isAdmin) { $sp['Verb'] = 'RunAs' }
+    return Start-Process @sp
+}
+
 function Write-CenteredMessage {
     param(
         [Parameter(Mandatory)] [string]$Message,
@@ -111,7 +125,7 @@ function Install-SevenZip {
     Start-BitsTransfer -Source $url -Destination $tmp -ErrorAction Stop
 
     Write-Host 'Установка 7-Zip...' -ForegroundColor Cyan
-    Start-Process -FilePath $tmp -ArgumentList '/S' -Wait -ErrorAction Stop
+    Start-Install -FilePath $tmp -Arguments '/S' -NeedsAdmin | Out-Null
 
     Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue
 
@@ -323,20 +337,71 @@ function Install-WithWinget {
     return $false
 }
 
-# --- Проверка прав администратора ------------------------------------------
+function Install-Winget {
+    # Ставит App Installer (winget) per-user через Add-AppxPackage — без админа.
+    # Best-effort: при любой ошибке возвращаем $false и работаем на прямых ссылках.
+    Write-Host 'Установка winget (App Installer)...' -ForegroundColor Cyan
+    Write-PtLog 'Winget bootstrap: start'
+    $tmp = Join-Path $env:TEMP 'winget-bootstrap'
+    try {
+        if (Test-Path $tmp) { Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue }
+        New-Item -ItemType Directory -Path $tmp -Force | Out-Null
 
-if (-not (Test-IsAdmin)) {
-    Write-Host 'Скрипт требует запуска от имени администратора.' -ForegroundColor Red
-    if (Read-YesNo 'Хотите запустить скрипт от имени администратора?') {
-        Start-Process -FilePath PowerShell `
-            -ArgumentList '-Command', 'irm https://powertoy.erney.monster | iex' `
-            -Verb RunAs
-        Exit
-    } else {
-        Write-Host 'Скрипт требует прав администратора для корректной работы.' -ForegroundColor Red
-        Read-Host 'Нажмите Enter для выхода'
-        Exit
+        # 1. Зависимость VCLibs
+        $vclibs = Join-Path $tmp 'vclibs.appx'
+        Start-BitsTransfer -Source 'https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx' -Destination $vclibs -ErrorAction Stop
+        Add-AppxPackage -Path $vclibs -ErrorAction SilentlyContinue
+
+        # 2. Зависимость Microsoft.UI.Xaml 2.8 (appx лежит внутри nupkg)
+        $nupkg = Join-Path $tmp 'uixaml.zip'
+        Start-BitsTransfer -Source 'https://api.nuget.org/v3-flatcontainer/microsoft.ui.xaml/2.8.7/microsoft.ui.xaml.2.8.7.nupkg' -Destination $nupkg -ErrorAction Stop
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
+        $zip = [System.IO.Compression.ZipFile]::OpenRead($nupkg)
+        try {
+            $entry = $zip.Entries | Where-Object { $_.FullName -eq 'tools/AppX/x64/Release/Microsoft.UI.Xaml.2.8.appx' } | Select-Object -First 1
+            if ($entry) {
+                $uixaml = Join-Path $tmp 'uixaml.appx'
+                [System.IO.Compression.ZipFileExtensions]::ExtractToFile($entry, $uixaml, $true)
+                Add-AppxPackage -Path $uixaml -ErrorAction SilentlyContinue
+            }
+        } finally { $zip.Dispose() }
+
+        # 3. App Installer (winget)
+        $bundle = Join-Path $tmp 'AppInstaller.msixbundle'
+        Start-BitsTransfer -Source 'https://aka.ms/getwinget' -Destination $bundle -ErrorAction Stop
+        Add-AppxPackage -Path $bundle -ErrorAction Stop
+
+        # winget только что поставлен — добавим WindowsApps в PATH текущей сессии
+        $wa = Join-Path $env:LOCALAPPDATA 'Microsoft\WindowsApps'
+        if ((Test-Path $wa) -and ($env:PATH -notlike "*$wa*")) { $env:PATH = "$env:PATH;$wa" }
+        $script:wingetAvailable = $null
+
+        if (Test-WingetAvailable) {
+            Write-Host 'winget установлен.' -ForegroundColor Green
+            Write-PtLog 'Winget bootstrap: success'
+            return $true
+        }
+        throw 'winget недоступен после установки'
+    } catch {
+        Write-Host "Не удалось установить winget: $_" -ForegroundColor Yellow
+        Write-Host 'Продолжаю с прямыми ссылками.' -ForegroundColor DarkGray
+        Write-PtLog "Winget bootstrap failed: $_" 'WARN'
+        return $false
+    } finally {
+        Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
     }
+}
+
+# --- Права администратора (не обязательны) ---------------------------------
+# Скрипт работает и без админа. Программы для пользователя ставятся как есть;
+# для тех, что требуют прав (MSI, драйверы, поле RequiresAdmin), UAC
+# запрашивается точечно при установке именно этой программы.
+
+$script:isAdmin = Test-IsAdmin
+if (-not $script:isAdmin) {
+    Write-Host 'Запущено без прав администратора.' -ForegroundColor Yellow
+    Write-Host 'Это нормально — для программ, которым нужен админ, появится отдельный запрос UAC.' -ForegroundColor DarkGray
+    Write-Host
 }
 
 Write-PtLog '=== Session start ==='
@@ -402,6 +467,15 @@ if (-not $sevenZipPath) {
     } else {
         Write-Host 'Установка 7-Zip пропущена. Программы типа archive не сработают.' -ForegroundColor Yellow
         if (-not (Read-YesNo 'Продолжить без 7-Zip?')) { Exit }
+    }
+}
+
+# --- Winget (ставит программы последней версии) ---------------------------
+
+if (-not (Test-WingetAvailable)) {
+    Write-Host 'winget не найден — с ним программы ставятся последней версии.' -ForegroundColor Yellow
+    if (Read-YesNo 'Установить winget (App Installer)?') {
+        Install-Winget | Out-Null
     }
 }
 
@@ -556,18 +630,22 @@ function Install-SelectedProgram {
             $installerPath = $downloadFile
         }
 
-        if ($installerPath -like '*.msi') {
+        $isMsi      = $installerPath -like '*.msi'
+        # MSI /quiet сам UAC не вызывает → для него (и для помеченных RequiresAdmin)
+        # поднимаем права точечно. Обычные exe с админ-манифестом всплывут UAC сами.
+        $needsAdmin = $isMsi -or [bool]$program.RequiresAdmin
+        if ($needsAdmin -and -not $script:isAdmin) {
+            Write-Host 'Этой программе нужны права администратора — появится запрос UAC.' -ForegroundColor Yellow
+        }
+
+        if ($isMsi) {
             Write-Host "Установка MSI-пакета $($program.Name)..." -ForegroundColor Cyan
             $msiArgs = "/i `"$installerPath`""
             if ($program.Args) { $msiArgs += " $($program.Args)" }
-            Start-Process -FilePath 'msiexec.exe' -ArgumentList $msiArgs -Wait
+            Start-Install -FilePath 'msiexec.exe' -Arguments $msiArgs -NeedsAdmin:$needsAdmin | Out-Null
         } else {
             Write-Host "Установка $($program.Name)..." -ForegroundColor Cyan
-            if ($program.Args) {
-                Start-Process -FilePath $installerPath -ArgumentList $program.Args -Wait
-            } else {
-                Start-Process -FilePath $installerPath -Wait
-            }
+            Start-Install -FilePath $installerPath -Arguments $program.Args -NeedsAdmin:$needsAdmin | Out-Null
         }
 
         Write-Host "$($program.Name) успешно установлен." -ForegroundColor Green
