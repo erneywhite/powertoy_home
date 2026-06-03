@@ -209,42 +209,21 @@ function Get-CachedOrDownload {
     param(
         [Parameter(Mandatory)] [string]$Url,
         [Parameter(Mandatory)] [string]$Destination,
-        [Parameter(Mandatory)] [string]$DisplayName,
-        [string]$Sha256
+        [Parameter(Mandatory)] [string]$DisplayName
     )
 
-    $cached = $false
     if (Test-Path -LiteralPath $Destination) {
         $size = (Get-Item -LiteralPath $Destination).Length
         if ($size -gt 0) {
             $sizeMb = [math]::Round($size / 1MB, 1)
             Write-Host "Используется кешированная версия $DisplayName ($sizeMb MB)" -ForegroundColor DarkGreen
             Write-PtLog "Cache hit: $DisplayName ($size bytes)"
-            $cached = $true
-        } else {
-            Remove-Item -LiteralPath $Destination -Force -ErrorAction SilentlyContinue
+            return
         }
+        Remove-Item -LiteralPath $Destination -Force -ErrorAction SilentlyContinue
     }
 
-    if (-not $cached) {
-        Invoke-DownloadWithProgress -Url $Url -Destination $Destination -DisplayName $DisplayName
-    }
-
-    # Проверка целостности по SHA256, если в programs.json задан хеш (поле Sha256).
-    # Сверяем и кеш, и свежую загрузку; при несовпадении удаляем файл и прерываем установку.
-    if ($Sha256) {
-        $expected = ($Sha256 -replace '\s', '')
-        Write-Host 'Проверка целостности (SHA256)...' -ForegroundColor Cyan
-        $actual = (Get-FileHash -LiteralPath $Destination -Algorithm SHA256).Hash
-        if ($actual -ieq $expected) {
-            Write-Host 'Хеш совпал.' -ForegroundColor Green
-            Write-PtLog "SHA256 OK: $DisplayName"
-        } else {
-            Remove-Item -LiteralPath $Destination -Force -ErrorAction SilentlyContinue
-            Write-PtLog "SHA256 MISMATCH: $DisplayName expected=$expected actual=$actual" 'ERROR'
-            throw "SHA256 не совпал для $DisplayName (ожидалось $expected, получено $actual). Файл удалён."
-        }
-    }
+    Invoke-DownloadWithProgress -Url $Url -Destination $Destination -DisplayName $DisplayName
 }
 
 # --- Установленные программы (для отметки в меню) -------------------------
@@ -546,7 +525,7 @@ function Install-IsoProgram {
     param([Parameter(Mandatory)] $Program)
 
     $isoPath = Join-Path $downloadPath $Program.Installer
-    Get-CachedOrDownload -Url $Program.Url -Destination $isoPath -DisplayName "ISO $($Program.Name)" -Sha256 $Program.Sha256
+    Get-CachedOrDownload -Url $Program.Url -Destination $isoPath -DisplayName "ISO $($Program.Name)"
 
     if ($Program.LicenseKey) {
         Set-Clipboard -Value $Program.LicenseKey
@@ -573,7 +552,7 @@ function Install-ScriptProgram {
     param([Parameter(Mandatory)] $Program)
 
     $scriptPath = Join-Path $downloadPath $Program.Installer
-    Get-CachedOrDownload -Url $Program.Url -Destination $scriptPath -DisplayName "скрипт $($Program.Name)" -Sha256 $Program.Sha256
+    Get-CachedOrDownload -Url $Program.Url -Destination $scriptPath -DisplayName "скрипт $($Program.Name)"
 
     Write-Host "Выполнение скрипта $($Program.Name)..." -ForegroundColor Cyan
     & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $scriptPath
@@ -611,7 +590,7 @@ function Install-SelectedProgram {
         $downloadFile = Join-Path $downloadPath $downloadName
         $extractPath  = Join-Path $downloadPath ($program.Name -replace ' ', '_')
 
-        Get-CachedOrDownload -Url $program.Url -Destination $downloadFile -DisplayName $program.Name -Sha256 $program.Sha256
+        Get-CachedOrDownload -Url $program.Url -Destination $downloadFile -DisplayName $program.Name
 
         if ($program.Zip) {
             if (Test-Path -LiteralPath $extractPath) {
