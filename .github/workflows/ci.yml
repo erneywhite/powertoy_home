@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '0 6 * * 1'   # понедельник 06:00 UTC — еженедельная проверка ссылок
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-json:
+    name: Валидация programs.json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Проверка структуры
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $programs = Get-Content programs.json -Raw -Encoding UTF8 | ConvertFrom-Json
+          if (-not $programs -or $programs.Count -eq 0) { throw 'programs.json пуст или не распарсился' }
+          $required = 'Name','Url','Installer'
+          $errors = New-Object System.Collections.Generic.List[string]
+          $i = 0
+          foreach ($p in $programs) {
+            $i++
+            foreach ($f in $required) {
+              if (-not $p.$f) { $errors.Add("Пункт #$i ($($p.Name)): нет поля '$f'") }
+            }
+            if ($p.Zip -and -not $p.Installer) { $errors.Add("Пункт #$i ($($p.Name)): Zip без Installer") }
+          }
+          if ($errors.Count -gt 0) {
+            $errors | ForEach-Object { Write-Host "::error::$_" }
+            throw "$($errors.Count) ошибк(а/и) валидации"
+          }
+          Write-Host "OK: $($programs.Count) программ, обязательные поля на месте"
+
+  lint-ps1:
+    name: PSScriptAnalyzer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Анализ powertoy.ps1
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Set-PSRepository PSGallery -InstallationPolicy Trusted
+          Install-Module PSScriptAnalyzer -Force -Scope CurrentUser
+          $r = Invoke-ScriptAnalyzer -Path powertoy.ps1 -ExcludeRule PSAvoidUsingWriteHost
+          if ($r) { $r | Format-Table -AutoSize | Out-String | Write-Host }
+          $errs = @($r | Where-Object Severity -eq 'Error')
+          if ($errs.Count -gt 0) { throw "$($errs.Count) ошибк(а/и) уровня Error" }
+          Write-Host "PSScriptAnalyzer: ошибок уровня Error нет (предупреждения не валят сборку)"
+
+  link-check:
+    name: Проверка ссылок (еженедельно)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: HEAD/GET по всем URL
+        id: check
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $programs = Get-Content programs.json -Raw -Encoding UTF8 | ConvertFrom-Json
+          $bad = New-Object System.Collections.Generic.List[string]
+          foreach ($p in $programs) {
+            $u = $p.Url; $ok = $false
+            foreach ($m in 'Head','Get') {
+              try {
+                $h = @{}; if ($m -eq 'Get') { $h['Range'] = 'bytes=0-0' }
+                $resp = Invoke-WebRequest -Uri $u -Method $m -Headers $h -MaximumRedirection 5 -TimeoutSec 30 -SkipHttpErrorCheck -UseBasicParsing
+                if ([int]$resp.StatusCode -lt 400) { $ok = $true; break }
+              } catch { }
+            }
+            if (-not $ok) { $bad.Add("- **$($p.Name)** — $u") }
+          }
+          if ($bad.Count -gt 0) {
+            $body = "Еженедельная проверка нашла недоступные ссылки:`n`n" + ($bad -join "`n")
+            Set-Content -Path dead_links.md -Value $body -Encoding utf8
+            "has_dead=true" | Out-File $env:GITHUB_OUTPUT -Append
+            Write-Host $body
+          } else {
+            "has_dead=false" | Out-File $env:GITHUB_OUTPUT -Append
+            Write-Host "Все ссылки живы."
+          }
+      - name: Открыть issue при мёртвых ссылках
+        if: steps.check.outputs.has_dead == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          existing=$(gh issue list --state open --search "Недоступные ссылки in:title" --json number --jq 'length')
+          if [ "$existing" = "0" ]; then
+            gh issue create --title "Недоступные ссылки ($(date +%F))" --body-file dead_links.md
+          else
+            echo "Открытый issue про недоступные ссылки уже есть — пропускаю."
+          fi
