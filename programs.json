@@ -205,7 +205,7 @@
     },
     {
         "Name": "LibreOffice (26.2.2)",
-        "Category": "Архиваторы и утилиты",
+        "Category": "Офис",
         "Url": "https://download.documentfoundation.org/libreoffice/stable/26.2.2/win/x86_64/LibreOffice_26.2.2_Win_x86-64.msi",
         "Args": "/quiet /norestart",
         "Installer": "LibreOffice_26.2.2_Win_x86-64.msi",

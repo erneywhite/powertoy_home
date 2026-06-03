@@ -77,10 +77,15 @@ irm https://raw.githubusercontent.com/erneywhite/powertoy_home/refs/heads/main/p
 |---|---------|------|--------|
 | 1 | 7-Zip (26.01) | .exe | 7-zip.org |
 | 2 | WinRAR (7.00) | .exe | powertoy.erney.monster |
-| 28 | LibreOffice (26.2.2) | .msi | documentfoundation.org |
 | 29 | HiBitUninstaller (4.0.10) | .exe | powertoy.erney.monster |
 | 30 | WinDirStat (2.5.0) | .msi | github.com |
 | 31 | Paragon HDM Ru (17.20.9) | archive | powertoy.erney.monster |
+
+### Офис
+
+| # | Программа | Тип | Источник |
+|---|---------|------|--------|
+| 28 | LibreOffice (26.2.2) | .msi | documentfoundation.org |
 
 ### Браузеры
 
