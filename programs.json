@@ -4,7 +4,8 @@
         "Category": "Архиваторы и утилиты",
         "Url": "https://www.7-zip.org/a/7z2601-x64.exe",
         "Args": "/S",
-        "Installer": "7z2601-x64.exe"
+        "Installer": "7z2601-x64.exe",
+        "WingetId": "7zip.7zip"
     },
     {
         "Name": "WinRAR (7.00)",
@@ -18,42 +19,48 @@
         "Category": "Браузеры",
         "Url": "https://download-installer.cdn.mozilla.net/pub/firefox/releases/150.0.1/win64/ru/Firefox%20Setup%20150.0.1.msi",
         "Args": "/quiet /norestart",
-        "Installer": "Firefox Setup 150.0.1.msi"
+        "Installer": "Firefox Setup 150.0.1.msi",
+        "WingetId": "Mozilla.Firefox"
     },
     {
         "Name": "Google Chrome (latest)",
         "Category": "Браузеры",
         "Url": "https://powertoy.erney.monster/packs/ChromeSetup.exe",
         "Args": "/S",
-        "Installer": "ChromeSetup.exe"
+        "Installer": "ChromeSetup.exe",
+        "WingetId": "Google.Chrome"
     },
     {
         "Name": "Notepad++ (8.9.4)",
         "Category": "Системные утилиты",
         "Url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.4/npp.8.9.4.Installer.exe",
         "Args": "/S",
-        "Installer": "npp.8.9.4.Installer.exe"
+        "Installer": "npp.8.9.4.Installer.exe",
+        "WingetId": "Notepad++.Notepad++"
     },
     {
         "Name": "Steam (latest)",
         "Category": "Игры и гейминг",
         "Url": "https://cdn.cloudflare.steamstatic.com/client/installer/SteamSetup.exe",
         "Args": "/S",
-        "Installer": "SteamSetup.exe"
+        "Installer": "SteamSetup.exe",
+        "WingetId": "Valve.Steam"
     },
     {
         "Name": "Epic Games Store (19.2.3)",
         "Category": "Игры и гейминг",
         "Url": "https://epicgames-download1.akamaized.net/Builds/UnrealEngineLauncher/Installers/Windows/EpicInstaller-19.2.3.msi?launcherfilename=EpicInstaller-19.2.3.msi",
         "Args": "/quiet /norestart",
-        "Installer": "EpicInstaller-19.2.3.msi"
+        "Installer": "EpicInstaller-19.2.3.msi",
+        "WingetId": "EpicGames.EpicGamesLauncher"
     },
     {
         "Name": "Discord (latest)",
         "Category": "Мессенджеры и соцсети",
         "Url": "https://discord.com/api/download?platform=win",
         "Args": "/S",
-        "Installer": "DiscordSetup.exe"
+        "Installer": "DiscordSetup.exe",
+        "WingetId": "Discord.Discord"
     },
     {
         "Name": "AmneziaVPN (4.8.14.5)",
@@ -67,7 +74,8 @@
         "Category": "Музыка и медиа",
         "Url": "https://download.scdn.co/SpotifySetup.exe",
         "Args": "/S",
-        "Installer": "SpotifySetup.exe"
+        "Installer": "SpotifySetup.exe",
+        "WingetId": "Spotify.Spotify"
     },
     {
         "Name": "1Password (latest)",
@@ -75,6 +83,7 @@
         "Url": "https://downloads.1password.com/win/1PasswordSetup-latest.exe",
         "Args": "",
         "Installer": "1PasswordSetup-latest.exe",
+        "WingetId": "AgileBits.1Password",
         "DetectNames": ["1Password", "OnePassword", "AgileBits"]
     },
     {
@@ -89,14 +98,16 @@
         "Category": "Торрент и облако",
         "Url": "https://netix.dl.sourceforge.net/project/qbittorrent/qbittorrent-win32/qbittorrent-5.1.4/qbittorrent_5.1.4_x64_setup.exe?viasf=1",
         "Args": "/S",
-        "Installer": "qbittorrent_5.1.4_x64_setup.exe"
+        "Installer": "qbittorrent_5.1.4_x64_setup.exe",
+        "WingetId": "qBittorrent.qBittorrent"
     },
     {
         "Name": "Telegram (6.7.8)",
         "Category": "Мессенджеры и соцсети",
         "Url": "https://td.telegram.org/tx64/tsetup-x64.6.7.8.exe",
         "Args": "/S",
-        "Installer": "tsetup-x64.6.7.8.exe"
+        "Installer": "tsetup-x64.6.7.8.exe",
+        "WingetId": "Telegram.TelegramDesktop"
     },
     {
         "Name": "NVIDIA App (11.0.7.247)",
@@ -110,7 +121,8 @@
         "Category": "Торрент и облако",
         "Url": "https://global.synologydownload.com/download/Utility/SynologyDriveClient/4.0.2-17889/Windows/Installer/i686/Synology%20Drive%20Client-4.0.2-17889-x86.exe",
         "Args": "/S",
-        "Installer": "Synology Drive Client-4.0.2-17889-x86.exe"
+        "Installer": "Synology Drive Client-4.0.2-17889-x86.exe",
+        "WingetId": "Synology.DriveClient"
     },
     {
         "Name": "CurseForge (latest)",
@@ -181,7 +193,8 @@
         "Category": "Драйверы и периферия",
         "Url": "https://download01.logi.com/web/ftp/pub/techsupport/gaming/lghub_installer.exe",
         "Args": "",
-        "Installer": "lghub_installer.exe"
+        "Installer": "lghub_installer.exe",
+        "WingetId": "Logitech.GHUB"
     },
     {
         "Name": "RK Keyboard (latest)",
@@ -195,7 +208,8 @@
         "Category": "Архиваторы и утилиты",
         "Url": "https://download.documentfoundation.org/libreoffice/stable/26.2.2/win/x86_64/LibreOffice_26.2.2_Win_x86-64.msi",
         "Args": "/quiet /norestart",
-        "Installer": "LibreOffice_26.2.2_Win_x86-64.msi"
+        "Installer": "LibreOffice_26.2.2_Win_x86-64.msi",
+        "WingetId": "TheDocumentFoundation.LibreOffice"
     },
     {
         "Name": "HiBitUninstaller (4.0.10)",
@@ -209,7 +223,8 @@
         "Category": "Архиваторы и утилиты",
         "Url": "https://github.com/windirstat/windirstat/releases/download/release/v2.5.0/WinDirStat-x64.msi",
         "Args": "/quiet /norestart",
-        "Installer": "WinDirStat-x64.msi"
+        "Installer": "WinDirStat-x64.msi",
+        "WingetId": "WinDirStat.WinDirStat"
     },
     {
         "Name": "Paragon Hard Disk Manager Ru (archive&portable 17.20.9)",
