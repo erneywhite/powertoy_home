@@ -137,11 +137,23 @@ function Install-SevenZip {
 
 # --- Прогресс-бар скачивания -----------------------------------------------
 
+function Format-Duration {
+    param([double]$Seconds)
+    if ($Seconds -lt 0) { $Seconds = 0 }
+    $s = [int][math]::Round($Seconds)
+    if ($s -lt 60) { return "${s}с" }
+    return ("{0}м{1:D2}с" -f [int]($s / 60), ($s % 60))
+}
+
 function Write-DownloadProgress {
     # Параметры без типизации: BITS отдаёт BytesTotal как [uint64] и когда
     # размер неизвестен — возвращает [uint64]::MaxValue (18446744073709551615),
     # что в Int64 не лезет. Работаем через [double].
-    param([Parameter(Mandatory)] $Received, [Parameter(Mandatory)] $Total)
+    param(
+        [Parameter(Mandatory)] $Received,
+        [Parameter(Mandatory)] $Total,
+        [double]$ElapsedSec = 0
+    )
 
     $width = [Console]::WindowWidth - 1
     $rD = [double]$Received
@@ -149,16 +161,25 @@ function Write-DownloadProgress {
     # BITS-сентинел «размер неизвестен» или невалидное значение
     $totalKnown = ($tD -gt 0) -and ($tD -lt [double][uint64]::MaxValue)
 
+    # Средняя скорость и ETA за текущую попытку загрузки.
+    $speedStr = ''
+    $etaStr   = ''
+    if ($ElapsedSec -gt 0.5 -and $rD -gt 0) {
+        $bps = $rD / $ElapsedSec
+        $speedStr = "  {0,5:N1} MB/s" -f ($bps / 1MB)
+        if ($totalKnown -and $bps -gt 0) {
+            $etaStr = "  ETA " + (Format-Duration (($tD - $rD) / $bps))
+        }
+    }
+
     if (-not $totalKnown) {
-        $line = "  Скачано: $([math]::Round($rD / 1MB, 1)) MB"
+        $line = "  Скачано: {0:N1} MB{1}" -f ($rD / 1MB), $speedStr
     } else {
         $pct = [math]::Min(100, [int](($rD / $tD) * 100))
         $barWidth = 30
         $filled = [int]([math]::Floor($pct * $barWidth / 100))
         $bar = ('█' * $filled) + ('░' * ($barWidth - $filled))
-        $receivedMb = [math]::Round($rD / 1MB, 1)
-        $totalMb    = [math]::Round($tD / 1MB, 1)
-        $line = "  [$bar] {0,3}%  {1,5} / {2,5} MB" -f $pct, $receivedMb, $totalMb
+        $line = "  [$bar] {0,3}%  {1,5:N1} / {2,5:N1} MB{3}{4}" -f $pct, ($rD / 1MB), ($tD / 1MB), $speedStr, $etaStr
     }
 
     if ($line.Length -lt $width) { $line = $line.PadRight($width) }
@@ -169,39 +190,53 @@ function Invoke-DownloadWithProgress {
     param(
         [Parameter(Mandatory)] [string]$Url,
         [Parameter(Mandatory)] [string]$Destination,
-        [Parameter(Mandatory)] [string]$DisplayName
+        [Parameter(Mandatory)] [string]$DisplayName,
+        [int]$MaxAttempts = 3
     )
 
     Write-Host "Скачивание $DisplayName..." -ForegroundColor Cyan
     Write-PtLog "Download start: $DisplayName ($Url)"
 
-    $job = Start-BitsTransfer -Source $Url -Destination $Destination `
-        -Asynchronous -DisplayName $DisplayName -ErrorAction Stop
+    for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
+        $job = $null
+        $sw  = [System.Diagnostics.Stopwatch]::StartNew()
+        try {
+            $job = Start-BitsTransfer -Source $Url -Destination $Destination `
+                -Asynchronous -DisplayName $DisplayName -ErrorAction Stop
 
-    try {
-        while ($job.JobState -ne 'Transferred' -and $job.JobState -ne 'Error') {
-            if ($job.BytesTotal -gt 0) {
-                Write-DownloadProgress -Received $job.BytesTransferred -Total $job.BytesTotal
+            while ($job.JobState -ne 'Transferred' -and $job.JobState -ne 'Error') {
+                if ($job.BytesTotal -gt 0) {
+                    Write-DownloadProgress -Received $job.BytesTransferred -Total $job.BytesTotal -ElapsedSec $sw.Elapsed.TotalSeconds
+                }
+                Start-Sleep -Milliseconds 200
             }
-            Start-Sleep -Milliseconds 200
-        }
 
-        if ($job.JobState -eq 'Transferred') {
-            Write-DownloadProgress -Received $job.BytesTotal -Total $job.BytesTotal
-            [Console]::WriteLine()
-            Complete-BitsTransfer -BitsJob $job
-            Write-PtLog "Download done: $DisplayName ($($job.BytesTotal) bytes)"
-        } else {
+            if ($job.JobState -eq 'Transferred') {
+                Write-DownloadProgress -Received $job.BytesTotal -Total $job.BytesTotal -ElapsedSec $sw.Elapsed.TotalSeconds
+                [Console]::WriteLine()
+                Complete-BitsTransfer -BitsJob $job
+                Write-PtLog "Download done: $DisplayName ($($job.BytesTotal) bytes)"
+                return
+            }
+
             $errMsg = $job.ErrorDescription
             Remove-BitsTransfer -BitsJob $job -ErrorAction SilentlyContinue
-            Write-PtLog "Download failed: $DisplayName — $errMsg" 'ERROR'
             throw "Ошибка BITS: $errMsg"
+        } catch {
+            if ($job -and $job.JobState -ne 'Transferred') {
+                Remove-BitsTransfer -BitsJob $job -ErrorAction SilentlyContinue
+            }
+            Remove-Item -LiteralPath $Destination -Force -ErrorAction SilentlyContinue
+            if ($attempt -ge $MaxAttempts) {
+                Write-PtLog "Download failed (попыток: $attempt): $DisplayName — $_" 'ERROR'
+                throw
+            }
+            $wait = 2 * $attempt
+            [Console]::WriteLine()
+            Write-Host "Сбой загрузки (попытка $attempt из $MaxAttempts). Повтор через ${wait}с..." -ForegroundColor Yellow
+            Write-PtLog "Download retry $attempt/${MaxAttempts}: $DisplayName — $_" 'WARN'
+            Start-Sleep -Seconds $wait
         }
-    } catch {
-        if ($job -and $job.JobState -ne 'Transferred') {
-            Remove-BitsTransfer -BitsJob $job -ErrorAction SilentlyContinue
-        }
-        throw
     }
 }
 
@@ -750,7 +785,14 @@ try {
         if ($indices.Count -eq 0) { continue }
 
         if ($indices.Count -gt 1) {
-            Write-Host "Будут установлены $($indices.Count) программ(ы)." -ForegroundColor Cyan
+            Write-Host "Выбрано программ: $($indices.Count)" -ForegroundColor Cyan
+            foreach ($idx in $indices) {
+                Write-Host ("  • {0}" -f $programs[$idx - 1].Name)
+            }
+            if (-not (Read-YesNo 'Установить выбранное?')) {
+                Write-Host 'Отменено.' -ForegroundColor Yellow
+                continue
+            }
         }
 
         foreach ($idx in $indices) {
